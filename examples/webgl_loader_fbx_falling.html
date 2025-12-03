@@ -104,21 +104,21 @@
         }
 
         .vr-button {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        padding: 12px 24px;
-        background: linear-gradient(45deg, #2196F3, #21CBF3);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        z-index: 1000;
-        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-        transition: all 0.3s ease;
-    }
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001 !important; /* Mayor que cualquier otro elemento */
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+            transition: all 0.3s ease;
+        }
 
     .vr-button:hover {
         background: linear-gradient(45deg, #1976D2, #1E88E5);
@@ -179,7 +179,14 @@
             line-height: 1.5;
         }
         
-        canvas { display:block; }
+        canvas { 
+            display: block; 
+            width: 100vw !important; 
+            height: 100vh !important; 
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
         #stats-container { position: absolute; top: 0; left: 0; z-index: 100; }
         
     </style>
@@ -608,24 +615,19 @@
 
     let totalMove = new THREE.Vector3();
     let hasInput = false;
-    let lastX = 0, lastY = 0; // Variables para depuración
+    let lastX = 0, lastY = 0;
     
     for (const src of session.inputSources) {
         if (!src.gamepad) continue;
         
-        // En Quest 3, los joysticks están en axes[0]/axes[1] y axes[2]/axes[3]
-        // Joystick izquierdo: axes[0] (horizontal), axes[1] (vertical)
-        // Joystick derecho: axes[2] (horizontal), axes[3] (vertical)
         let x = 0;
         let y = 0;
         
-        // Usar joystick izquierdo para movimiento (axes[0] y axes[1])
         if (src.gamepad.axes && src.gamepad.axes.length >= 2) {
-            x = src.gamepad.axes[0] || 0;  // Horizontal izquierdo
-            y = -(src.gamepad.axes[1] || 0);  // Vertical izquierdo (INVERTIDO - hacia adelante es negativo)
+            x = src.gamepad.axes[0] || 0;
+            y = -(src.gamepad.axes[1] || 0);
         }
         
-        // Zona muerta
         const deadzone = 0.15;
         if (Math.abs(x) < deadzone) x = 0;
         if (Math.abs(y) < deadzone) y = 0;
@@ -646,14 +648,81 @@
             .crossVectors(upVector, forward)
             .normalize();
         
-        // DEBUG: Mostrar direcciones
-        // console.log(`Forward: ${forward.x.toFixed(2)}, ${forward.z.toFixed(2)} | Right: ${right.x.toFixed(2)}, ${right.z.toFixed(2)}`);
-        
         // Acumular movimiento
-        // NOTA: y ya está invertido arriba, así que usamos directamente
-        totalMove.addScaledVector(forward, y * CONFIG.VR_WALK_SPEED * dt * 60); // Multiplicar por 60 para compensar dt
+        totalMove.addScaledVector(forward, y * CONFIG.VR_WALK_SPEED * dt * 60);
         totalMove.addScaledVector(right, x * CONFIG.VR_STRAFE_SPEED * dt * 60);
     }
+    
+    // Solo aplicar movimiento si hay entrada
+    if (totalMove.lengthSq() > 0.001) {
+        const playerObject = controls.getObject();
+        
+        // Aplicar movimiento usando el sistema de colisiones existente
+        const playerHalfHeight = CONFIG.PLAYER_HEIGHT / 2;
+        const playerHalfWidth = CONFIG.PLAYER_WIDTH / 2;
+        
+        // Crear colisionador actualizado con la posición real
+        playerCollider.setFromCenterAndSize(
+            playerObject.position,
+            new THREE.Vector3(CONFIG.PLAYER_WIDTH, CONFIG.PLAYER_HEIGHT, CONFIG.PLAYER_WIDTH)
+        );
+        
+        // Verificar colisiones por ejes separados
+        let moveX = totalMove.x;
+        let moveZ = totalMove.z;
+        
+        // Verificar movimiento en X
+        if (Math.abs(moveX) > 0.001) {
+            const futureColliderX = playerCollider.clone().translate(new THREE.Vector3(moveX, 0, 0));
+            let canMoveX = true;
+            
+            for (const obj of physicsObjects) {
+                if (futureColliderX.intersectsBox(obj.boundingBox)) {
+                    canMoveX = false;
+                    break;
+                }
+            }
+            
+            if (!canMoveX) moveX = 0;
+        }
+        
+        // Verificar movimiento en Z
+        if (Math.abs(moveZ) > 0.001) {
+            const futureColliderZ = playerCollider.clone().translate(new THREE.Vector3(0, 0, moveZ));
+            let canMoveZ = true;
+            
+            for (const obj of physicsObjects) {
+                if (futureColliderZ.intersectsBox(obj.boundingBox)) {
+                    canMoveZ = false;
+                    break;
+                }
+            }
+            
+            if (!canMoveZ) moveZ = 0;
+        }
+        
+        // Aplicar movimiento permitido
+        if (Math.abs(moveX) > 0.001 || Math.abs(moveZ) > 0.001) {
+            // EN VR: Solo mover el objeto del jugador, NO la cámara
+            playerObject.position.x += moveX;
+            playerObject.position.z += moveZ;
+            
+            // NO hacer esto en VR:
+            // camera.position.copy(playerObject.position);
+            
+            // DEBUG: Mostrar movimiento
+            // console.log(`Moved: X=${moveX.toFixed(2)}, Z=${moveZ.toFixed(2)}`);
+        }
+    }
+    
+    // (Opcional) Mantener el indicador de depuración si lo necesitas
+    if (moveIndicator && hasInput) {
+        moveIndicator.innerHTML = `VR Mov: (${lastX.toFixed(2)}, ${lastY.toFixed(2)})<br>
+                                 Total: (${totalMove.x.toFixed(2)}, ${totalMove.z.toFixed(2)})<br>
+                                 Pos: (${controls.getObject().position.x.toFixed(1)}, 
+                                 ${controls.getObject().position.z.toFixed(1)})`;
+    }
+}
     
     // Solo aplicar movimiento si hay entrada
     if (totalMove.lengthSq() > 0.001) {
@@ -1496,82 +1565,98 @@ function triggerHapticFeedback(hand, intensity, duration) {
     // ---------- LOOP PRINCIPAL ----------
     // -------------------------------------------------------------------
 
-    function animate() {
+     function animate() {
         requestAnimationFrame(animate);
     
-    const dt = clock.getDelta();
-    
-    // Actualizar estado VR
-    vrActive = renderer.xr.isPresenting;
-    
-    // 1. Actualizar Lógica
-    if (playerLife > 0) {
-        // Si está en VR, usar movimiento VR, sino usar teclado
-        if (vrActive) {
-            vrGamepadMove(dt);
-            updateTeleportArc();
-        } else {
-            updatePlayerMovement(dt);
+        const dt = clock.getDelta();
+        
+        // Actualizar estado VR
+        vrActive = renderer.xr.isPresenting;
+        
+        // 1. Actualizar Lógica
+        if (playerLife > 0) {
+            // Actualizar animaciones
+            if (mixer) {
+                mixer.update(dt);
+            }
+            
+            // Si está en VR, usar movimiento VR, sino usar teclado
+            if (vrActive) {
+                vrGamepadMove(dt);
+                updateTeleportArc();
+            } else {
+                updatePlayerMovement(dt);
+            }
+            stepPhysics(dt);
         }
-        stepPhysics(dt);
-    }
-    
-        // 2. Sincronizar modelo 3D con la cámara FPS
-        if (playerModel) {
+        
+        // 2. Sincronizar modelo 3D con la cámara FPS (solo en modo no-VR)
+        if (playerModel && !vrActive) {
             playerModel.position.copy(camera.position);
             playerModel.quaternion.copy(camera.quaternion);
             playerModel.position.y -= CONFIG.PLAYER_HEIGHT / 2 - 2; 
         }
-    
-        // 3. Sincronizar la cámara de tercera persona
-        if (playerModel && thirdPersonCamera) {
+        
+        // 3. Sincronizar la cámara de tercera persona (solo en modo no-VR)
+        if (playerModel && thirdPersonCamera && !vrActive) {
             const offset = new THREE.Vector3(0, 40, 60);
             offset.applyQuaternion(playerModel.quaternion);
             thirdPersonCamera.position.copy(playerModel.position).add(offset);
             thirdPersonCamera.lookAt(playerModel.position.clone().add(new THREE.Vector3(0, 20, 0)));
         }
-    
-        // 4. Renderizado
-        renderer.autoClear = false;
-        renderer.clear();
-
-        let bobOffset = 0;
-        if (playerRootBone && playerModel && playerLife > 0) {
-            const currentRootY = playerRootBone.position.y;
-            bobOffset = (currentRootY - defaultRootY) * playerModel.scale.y; 
-        }
-    
-        // --- RENDER 1: Vista Principal ---
-        if (playerModel) playerModel.visible = false;
         
-        renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
-        renderer.setScissor(0, 0, window.innerWidth, window.innerHeight);
-        renderer.setScissorTest(true);
-        
-        camera.position.y += bobOffset; 
-        renderer.render(scene, camera);
-        camera.position.y -= bobOffset;
-
-        // --- RENDER 2: Vista de Esquina ---
-        if (playerModel && thirdPersonCamera) {
-            playerModel.visible = true;
-
-            const w = window.innerWidth * 0.20;
-            const h = window.innerHeight * 0.20;
-            const x = window.innerWidth - w - 20;
-            const y = 20;
+        // 4. Renderizado - COMPLETAMENTE DIFERENTE PARA VR vs NORMAL
+        if (vrActive) {
+            // EN MODO VR: Dejar que Three.js maneje todo el renderizado
+            renderer.render(scene, camera);
             
-            renderer.clearDepth();
+            // En VR, ocultamos el modelo del jugador
+            if (playerModel) {
+                playerModel.visible = false;
+            }
+        } else {
+            // MODO NORMAL: Sistema de vistas múltiples
+            renderer.autoClear = false;
+            renderer.clear();
+
+            let bobOffset = 0;
+            if (playerRootBone && playerModel && playerLife > 0) {
+                const currentRootY = playerRootBone.position.y;
+                bobOffset = (currentRootY - defaultRootY) * playerModel.scale.y; 
+            }
             
-            renderer.setViewport(x, y, w, h);
-            renderer.setScissor(x, y, w, h);
+            // --- RENDER 1: Vista Principal ---
+            if (playerModel) playerModel.visible = false;
+            
+            renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+            renderer.setScissor(0, 0, window.innerWidth, window.innerHeight);
             renderer.setScissorTest(true);
+            
+            camera.position.y += bobOffset; 
+            renderer.render(scene, camera);
+            camera.position.y -= bobOffset;
 
-            renderer.render(scene, thirdPersonCamera);
+            // --- RENDER 2: Vista de Esquina ---
+            if (playerModel && thirdPersonCamera) {
+                playerModel.visible = true;
+
+                const w = window.innerWidth * 0.20;
+                const h = window.innerHeight * 0.20;
+                const x = window.innerWidth - w - 20;
+                const y = 20;
+                
+                renderer.clearDepth();
+                
+                renderer.setViewport(x, y, w, h);
+                renderer.setScissor(x, y, w, h);
+                renderer.setScissorTest(true);
+
+                renderer.render(scene, thirdPersonCamera);
+            }
+            
+            renderer.autoClear = true;
         }
         
-        renderer.autoClear = true;
-    
         stats.update();
     }
 
