@@ -12,8 +12,36 @@
         /* Contenedor de información simple (esquina superior izquierda) */
         #info { position:absolute; top:8px; left:8px; z-index:10; background:rgba(0,0,0,0.4); padding:8px; border-radius:6px; font-size: 14px; }
         
-        /* HUD (Head-Up Display): Vida y Enemigos (esquina superior derecha) */
-        #hud { position: absolute; right: 12px; top: 12px; z-index:10; background: rgba(0,0,0,0.5); padding:10px; border-radius:6px; text-align:right; min-width:140px; }
+        /* HUD (Head-Up Display): Vida y Enemigos - POSICIÓN VISIBLE EN VR */
+        #hud { 
+            position: absolute; 
+            left: 20px; 
+            bottom: 100px; /* Sobre el footer */
+            z-index: 100; 
+            background: rgba(0, 0, 0, 0.75); 
+            padding: 15px; 
+            border-radius: 10px; 
+            text-align: left; 
+            min-width: 180px; 
+            display: none;
+            border: 2px solid #22ff88;
+            backdrop-filter: blur(5px);
+            font-size: 18px;
+        }
+
+        #hud div {
+            margin: 8px 0;
+        }
+
+        #hud strong {
+            color: #22ff88;
+            margin-right: 10px;
+        }
+
+        #hud span {
+            color: #fff;
+            font-weight: bold;
+        }
         
         /* Mensajes centrales (¡GANASTE! / GAME OVER) */
         #message { 
@@ -30,9 +58,22 @@
             display:none; 
             white-space: pre-wrap; /* <-- ¡IMPORTANTE! Permite saltos de línea con \n */
             text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            padding: 20px 40px;
+            border: 3px solid;
+            border-radius: 15px;
+            animation: pulse 2s infinite;
         }
 
-         /* -------- PORTADA INICIAL -------- */
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        /* -------- PORTADA INICIAL -------- */
         #portada {
             position: fixed;
             inset: 0;
@@ -46,7 +87,8 @@
             text-align: center;
             padding: 20px;
         }
-         #portada-content {
+        
+        #portada-content {
             max-width: 700px;
             background: rgba(0,0,0,0.6);
             padding: 40px;
@@ -115,24 +157,35 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            z-index: 1001 !important; /* Mayor que cualquier otro elemento */
+            z-index: 1000;
             box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
             transition: all 0.3s ease;
+            display: none;
         }
 
-    .vr-button:hover {
-        background: linear-gradient(45deg, #1976D2, #1E88E5);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(33, 150, 243, 0.6);
-    }
+        .vr-button:hover {
+            background: linear-gradient(45deg, #1976D2, #1E88E5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.6);
+        }
 
-    .vr-button:active {
-        transform: translateY(0);
-    }
-
+        .vr-button:active {
+            transform: translateY(0);
+        }
         
         /* Mira del jugador (cruz en el centro) */
-        .crosshair { position: absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; z-index:9; pointer-events:none; opacity:0.85; }
+        .crosshair { 
+            position: absolute; 
+            left:50%; 
+            top:50%; 
+            transform:translate(-50%,-50%); 
+            width:12px; 
+            height:12px; 
+            z-index:9; 
+            pointer-events:none; 
+            opacity:0.85; 
+            display: none;
+        }
         .crosshair:before, .crosshair:after { content:""; position:absolute; background:#fff; }
         .crosshair:before { left:50%; top:0; width:2px; height:100%; transform:translateX(-50%); }
         .crosshair:after  { top:50%; left:0; height:2px; width:100%; transform:translateY(-50%); }
@@ -151,6 +204,7 @@
             align-items:center; 
             z-index:5; 
             font-family: Arial, sans-serif; /* Requisito: Arial */
+            display: none;
         }
         
         /* Estilo para el <h1> del Título */
@@ -180,32 +234,112 @@
         }
         
         canvas { 
-            display: block; 
-            width: 100vw !important; 
-            height: 100vh !important; 
-            position: fixed;
+            display:none; 
+            position: absolute;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
         }
-        #stats-container { position: absolute; top: 0; left: 0; z-index: 100; }
+        
+        /* Botón de reinicio */
+        #restartBtn {
+            position: absolute;
+            left: 50%;
+            top: 60%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: #22ff88;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            z-index: 13;
+        }
+
+        #restartBtn:hover {
+            background: #44ffaa;
+        }
+
+        /* Información VR */
+        #vr-info { 
+            position: absolute; 
+            top: 80px; 
+            right: 20px; 
+            background: rgba(0,0,0,0.7); 
+            padding: 15px; 
+            border-radius: 8px; 
+            z-index: 11; 
+            display: none; 
+        }
+
+        /* LETRERO AL ENTRAR A VR - TEMPORAL */
+        #vr-enter-sign {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 25px 40px;
+            border-radius: 12px;
+            border: 3px solid #22ff88;
+            z-index: 9999;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 0 30px rgba(34, 255, 136, 0.7);
+            display: none;
+            width: 320px;
+        }
+        
+        #vr-enter-sign h2 {
+            color: #22ff88;
+            margin: 0 0 15px 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        #vr-enter-sign .stats {
+            font-size: 20px;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        #vr-enter-sign .stats span {
+            color: #22ff88;
+            font-weight: bold;
+        }
+        
+        #vr-enter-sign .tip {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 20px;
+            font-style: italic;
+        }
         
     </style>
 
+    <!-- Importar Three.js desde CDN -->
     <script type="importmap">
-        {
-            "imports": {
-                "three": "../build/three.module.js",
-                "three/addons/": "./jsm/"
-            }
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/"
         }
+    }
     </script>
+
 </head>
 <body>
-     <!-- Audio -->
+    <!-- Audio -->
     <audio id="shootSound" src="assets/Disparo.mp3"></audio>
-    <audio id="enemyDeathSound" src="assets/Explosion.mp3"></audio>
+    <audio id="explosionSound" src="assets/Explosion.mp3"></audio>
+    <audio id="enemyDeathSound" src="assets/Muerte_enemigos.mp3"></audio>
     <audio id="backgroundMusic" loop>
-    <source src="assets/musica.mp3" type="audio/mpeg">
+        <source src="assets/musica.mp3" type="audio/mpeg">
     </audio>
 
     <!-- PORTADA INICIAL -->
@@ -242,10 +376,12 @@
         <div style="font-size:12px; margin-top:6px;">Objetivo: llegar al portal verde</div>
     </div>
 
+    <!-- Mensajes -->
     <div id="message"></div>
+    <button id="restartBtn">Jugar Otra Vez</button>
 
     <!-- Información VR -->
-    <div id="vr-info" style="display: none;">
+    <div id="vr-info">
         <h3>Controles Quest 3</h3>
         <ul>
             <li><strong>Joystick:</strong> Moverse</li>
@@ -254,1144 +390,1575 @@
         </ul>
     </div>
 
-
-    <div id="message"></div>
-
+    <!-- Mira -->
     <div class="crosshair"></div>
 
-    <div id="stats-container"></div>
+    <!-- Letrero VR temporal -->
+    <div id="vr-enter-sign">
+        <h2>MODO VR ACTIVADO</h2>
+        <div class="stats">
+            Vida: <span id="vr-life">100</span>
+        </div>
+        <div class="stats">
+            Enemigos restantes: <span id="vr-enemies">0</span>
+        </div>
+        <div class="tip">
+            Este mensaje desaparecerá en unos segundos
+        </div>
+    </div>
 
-<script type="module">
-    // ---------- Importaciones de Módulos de Three.js ----------
-    import * as THREE from 'three';
-    import Stats from 'three/addons/libs/stats.module.js';
-    import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
-    import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-    import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
-    import { AnimationMixer } from 'three';
-    import { VRButton } from 'three/addons/webxr/VRButton.js';
-    import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+    <!-- Canvas para Three.js -->
+    <canvas id="scene"></canvas>
 
-    const CONFIG = {
-        GRAVITY: -30,
-        PLAYER_SPEED: 120,
-        PLAYER_SPRINT_SPEED: 220,
-        PLAYER_JUMP_FORCE: 10,
-        PLAYER_HEIGHT: 18,
-        PLAYER_WIDTH: 8,
-        PLAYER_DAMPING: 0.9,
-        PLAYER_START_LIFE: 100,
+    <script type="module">
+// -------------------------------------------------------------------
+// ---------- CONFIGURACIÓN ----------
+// -------------------------------------------------------------------
+const CONFIG = {
+    // Laberinto
+    MAZE_COLS: 11,
+    MAZE_ROWS: 11,
+    CELL_SIZE: 80,
+    WALL_HEIGHT: 20,
+    WALL_THICKNESS: 8,
+    
+    // Enemigos
+    ENEMY_COUNT: 8,
+    ENEMY_HEALTH: 50,
+    ENEMY_SPEED_MIN: 0.8,
+    ENEMY_SPEED_MAX: 1.6,
+    ENEMY_SIGHT_RANGE: 400,
+    ENEMY_ATTACK_RANGE: 15,
+    ENEMY_ATTACK_DAMAGE: 8,
+    
+    // Texturas
+    FLOOR_TEX: 'models/rgbe/piso.jpg',
+    WALL_TEX: 'models/rgbe/paredes.jpg',
+    BACKGROUND_TEX: 'models/rgbe/fondo.hdr',
+    
+    // VR
+    PLAYER_RADIUS: 0.35,
+    VR_WALK_SPEED: 5.5,
+    VR_STRAFE_SPEED: 4.8,
+    
+    // Otros
+    FOG_DENSITY: 0.028,
+    ARC_STEPS: 40,
+    ARC_SPEED: 7.5,
+    ARC_GRAVITY: 9.8,
+    MAX_SLOPE_DEG: 45
+};
 
-        VR_WALK_SPEED: 3.0,
-        VR_STRAFE_SPEED: 2.5,
-        VR_TELEPORT_SPEED: 12,
-        VR_TELEPORT_GRAVITY: 9.8,
-        VR_TELEPORT_STEPS: 40,
-        VR_MAX_SLOPE_DEG: 45,
+// Importar módulos necesarios
+import * as THREE from 'three';
+import { VRButton } from 'three/addons/webxr/VRButton.js';
+import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 
-        MAZE_COLS: 11,
-        MAZE_ROWS: 11,
-        CELL_SIZE: 80,
-        WALL_HEIGHT: 36,
-        WALL_THICKNESS: 8,
+// Variables globales
+let scene, camera, player, renderer;
+let physicsObjects = [];
+let enemies = [];
+let gameInitialized = false;
+let clock = new THREE.Clock();
+let bgScene, bgCam, skyMesh, starField;
+let mainLight, hemiLight;
+let listener;
+let controllerLeft, controllerRight, grip0, grip1;
+let arcLine, marker, teleportPoint;
+let teleportValid = false;
+let arcPointsBuf;
+let arcMatOK, arcMatBAD, arcGeo;
+let vrButton;
 
-        ENEMY_COUNT: 8,
-        ENEMY_HEALTH: 50,
-        ENEMY_SPEED_MIN: 0.8,
-        ENEMY_SPEED_MAX: 1.6,
-        ENEMY_SIGHT_RANGE: 400,
-        ENEMY_ATTACK_RANGE: 15,
-        ENEMY_ATTACK_DAMAGE: 8,
-        ENEMY_ATTACK_COOLDOWN: 1000,
-
-        SHOOT_DAMAGE: 30,
-        SHOOT_RANGE: 1500,
-        
-        HDR_PATH: 'models/rgbe/fondo.hdr',
-        FLOOR_TEX: 'models/rgbe/piso.jpg',
-        WALL_TEX: 'models/rgbe/paredes.jpg',
-    };
-
-    let camera, scene, renderer, stats, controls, clock;
-    const keys = {};
-    const physicsObjects = [];
-    const enemies = [];
-    let playerLife = CONFIG.PLAYER_START_LIFE;
-    const bgMusic = document.getElementById("backgroundMusic");
-    bgMusic.volume = 0.3;
-
-    const shootSound = document.getElementById("shootSound");
-    shootSound.volume = 0.5;
-
-    const lifeEl = document.getElementById('life');
-    const enemiesCountEl = document.getElementById('enemiesCount');
-    const messageEl = document.getElementById('message');
-    const statsContainer = document.getElementById('stats-container');
-
-    const playerVelocity = new THREE.Vector3();
-    let playerOnGround = false;
-    const playerCollider = new THREE.Box3();
-
-    let vrActive = false;
-    let vrButton, controllerLeft, controllerRight;
-    let controllerModelFactory;
-    let teleportValid = false;
-    const teleportPoint = new THREE.Vector3();
-    let arcLine, marker;
-    let arcMaterialOK, arcMaterialBAD;
-    const arcPointsBuf = new Float32Array(CONFIG.VR_TELEPORT_STEPS * 3);
-
-    const raycaster = new THREE.Raycaster();
-    const upVector = new THREE.Vector3(0, 1, 0);
-
-    let playerRootBone;
-    let defaultRootY = 0;
-    let playerModel, mixer, thirdPersonCamera;
-    const actions = {};
-    let actionCurrent = null;
-    let wallMaterial;
-
-    let lastShootTime = 0;
-
-    function initVR() {
-        if (!navigator.xr) {
-            console.error("WebXR no soportado");
-            return;
-        }
-        
-        renderer.xr.enabled = true;
-        renderer.xr.setReferenceSpaceType('local-floor');
-        
-        const sessionInit = {
-            optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking', 'layers'],
-            requiredFeatures: ['local-floor']
-        };
-        
-        vrButton = VRButton.createButton(renderer, sessionInit);
-        
-        vrButton.style.cssText = `
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(45deg, #2196F3, #21CBF3);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-            transition: all 0.3s ease;
-        `;
-        
-        vrButton.addEventListener('mouseenter', () => {
-            vrButton.style.background = 'linear-gradient(45deg, #1976D2, #1E88E5)';
-            vrButton.style.transform = 'translateY(-2px)';
+/** ========= INICIALIZAR RENDERER ========= */
+function initRenderer() {
+    const canvas = document.getElementById('scene');
+    
+    try {
+        renderer = new THREE.WebGLRenderer({ 
+            canvas, 
+            antialias: true,
+            alpha: true
         });
         
-        vrButton.addEventListener('mouseleave', () => {
-            vrButton.style.background = 'linear-gradient(45deg, #2196F3, #21CBF3)';
-            vrButton.style.transform = 'translateY(0)';
-        });
-        
-        document.body.appendChild(vrButton);
-        
-        controllerLeft = renderer.xr.getController(0);
-        controllerRight = renderer.xr.getController(1);
-        scene.add(controllerLeft, controllerRight);
-        
-        controllerModelFactory = new XRControllerModelFactory();
-        const grip0 = renderer.xr.getControllerGrip(0);
-        const grip1 = renderer.xr.getControllerGrip(1);
-        grip0.add(controllerModelFactory.createControllerModel(grip0));
-        grip1.add(controllerModelFactory.createControllerModel(grip1));
-        scene.add(grip0, grip1);
-        
-        createTeleportSystem();
-        setupVRShootEvents();
-        
-        renderer.xr.addEventListener('sessionstart', async function(event) {
-            console.log("Sesión VR iniciada");
-            
-            const session = event.session;
-            vrActive = true;
-            
-            try {
-                const referenceSpace = await session.requestReferenceSpace('local-floor');
-                renderer.xr.setReferenceSpace(referenceSpace);
-                console.log("Espacio de referencia configurado");
-                
-                if (session.requestHitTestSource) {
-                    const hitTestSource = await session.requestHitTestSource({ 
-                        space: referenceSpace 
-                    });
-                    scene.userData.hitTestSource = hitTestSource;
-                }
-                
-            } catch (error) {
-                console.warn("Error configurando referencia espacial:", error);
-                
-                try {
-                    const referenceSpace = await session.requestReferenceSpace('viewer');
-                    renderer.xr.setReferenceSpace(referenceSpace);
-                } catch (fallbackError) {
-                    console.error("No se pudo configurar referencia espacial:", fallbackError);
-                }
-            }
-            
-            if (controls) {
-                controls.unlock();
-                controls.enabled = false;
-            }
-            
-            if (vrButton) {
-                vrButton.style.display = 'none';
-            }
-        });
-        
-        renderer.xr.addEventListener('sessionend', function() {
-            vrActive = false;
-            console.log("Sesión VR finalizada");
-            
-            if (controls) {
-                controls.enabled = true;
-            }
-            
-            if (vrButton) {
-                vrButton.style.display = 'inline-block';
-            }
-        });
-        
-        console.log("VR inicializado con soporte para Quest 3");
-    }
-
-    function createTeleportSystem() {
-        arcMaterialOK = new THREE.LineBasicMaterial({ 
-            color: 0x7ad1ff, 
-            transparent: true, 
-            opacity: 0.95 
-        });
-        arcMaterialBAD = new THREE.LineBasicMaterial({ 
-            color: 0xff5a5a, 
-            transparent: true, 
-            opacity: 0.95 
-        });
-        
-        const arcGeo = new THREE.BufferGeometry().setFromPoints(
-            new Array(CONFIG.VR_TELEPORT_STEPS).fill(0).map(() => new THREE.Vector3())
-        );
-        
-        arcLine = new THREE.Line(arcGeo, arcMaterialOK);
-        arcLine.visible = false;
-        scene.add(arcLine);
-        
-        marker = new THREE.Mesh(
-            new THREE.RingGeometry(0.5, 0.6, 32),
-            new THREE.MeshBasicMaterial({ 
-                color: 0x7ad1ff, 
-                transparent: true, 
-                opacity: 0.9, 
-                side: THREE.DoubleSide 
-            })
-        );
-        marker.rotation.x = -Math.PI / 2;
-        marker.visible = false;
-        scene.add(marker);
-        
-        controllerRight.addEventListener('selectstart', () => {
-            if (vrActive) {
-                arcLine.visible = true;
-                marker.visible = true;
-            }
-        });
-        
-        controllerRight.addEventListener('selectend', () => {
-            if (vrActive && teleportValid) {
-                controls.getObject().position.copy(teleportPoint);
-                controls.getObject().position.y += CONFIG.PLAYER_HEIGHT / 2;
-                
-                triggerHapticFeedback('right', 0.3, 100);
-            }
-            arcLine.visible = false;
-            marker.visible = false;
-        });
-    }
-
-    function updateTeleportArc() {
-        if (!arcLine.visible || !vrActive) return;
-        teleportValid = false;
-        
-        const origin = new THREE.Vector3()
-            .setFromMatrixPosition(controllerRight.matrixWorld);
-        const dir = new THREE.Vector3(0, 0, -1)
-            .applyQuaternion(controllerRight.quaternion)
-            .normalize();
-        
-        const pts = [];
-        let hit = null;
-        const v0 = dir.clone().multiplyScalar(CONFIG.VR_TELEPORT_SPEED);
-        const g = new THREE.Vector3(0, -CONFIG.VR_TELEPORT_GRAVITY, 0);
-        let p = origin.clone();
-        let v = v0.clone();
-        
-        for (let i = 0; i < CONFIG.VR_TELEPORT_STEPS; i++) {
-            pts.push(p.clone());
-            v.addScaledVector(g, 1 / 60);
-            const np = p.clone().addScaledVector(v, 1 / 60);
-            
-            raycaster.set(p, np.clone().sub(p).normalize());
-            raycaster.far = p.distanceTo(np) + 0.1;
-            const hits = raycaster.intersectObjects(physicsObjects.filter(p => p.static).map(p => p.mesh));
-            
-            if (hits.length > 0) {
-                hit = hits[0];
-                break;
-            }
-            p.copy(np);
-        }
-        
-        for (let i = 0; i < CONFIG.VR_TELEPORT_STEPS; i++) {
-            const P = pts[Math.min(i, pts.length - 1)];
-            arcPointsBuf[i * 3 + 0] = P.x;
-            arcPointsBuf[i * 3 + 1] = P.y;
-            arcPointsBuf[i * 3 + 2] = P.z;
-        }
-        
-        arcLine.geometry.setAttribute('position', 
-            new THREE.BufferAttribute(arcPointsBuf, 3));
-        arcLine.geometry.attributes.position.needsUpdate = true;
-        
-        if (hit) {
-            const slopeDeg = THREE.MathUtils.radToDeg(
-                Math.acos(hit.faceNormal.dot(new THREE.Vector3(0, 1, 0)))
-            );
-            teleportValid = (slopeDeg <= CONFIG.VR_MAX_SLOPE_DEG);
-            
-            arcLine.material = teleportValid ? arcMaterialOK : arcMaterialBAD;
-            marker.material.color.set(teleportValid ? 0x7ad1ff : 0xff5a5a);
-            
-            marker.position.copy(hit.point);
-            marker.position.y += 0.1;
-            teleportPoint.copy(hit.point);
-        }
-    }
-
-    function vrGamepadMove(dt) {
-        if (!vrActive || !renderer.xr.isPresenting) return;
-        
-        const session = renderer.xr.getSession();
-        if (!session) return;
-
-        let totalMove = new THREE.Vector3();
-        
-        for (const src of session.inputSources) {
-            if (!src.gamepad) continue;
-            
-            let x = 0;
-            let y = 0;
-            
-            if (src.gamepad.axes && src.gamepad.axes.length >= 2) {
-                x = src.gamepad.axes[0] || 0;
-                y = -(src.gamepad.axes[1] || 0);
-            }
-            
-            const deadzone = 0.15;
-            if (Math.abs(x) < deadzone) x = 0;
-            if (Math.abs(y) < deadzone) y = 0;
-            
-            if (x === 0 && y === 0) continue;
-            
-            const forward = new THREE.Vector3();
-            camera.getWorldDirection(forward);
-            forward.y = 0;
-            forward.normalize();
-            
-            const right = new THREE.Vector3()
-                .crossVectors(upVector, forward)
-                .normalize();
-            
-            totalMove.addScaledVector(forward, y * CONFIG.VR_WALK_SPEED * dt * 60);
-            totalMove.addScaledVector(right, x * CONFIG.VR_STRAFE_SPEED * dt * 60);
-        }
-        
-        if (totalMove.lengthSq() > 0.001) {
-            const playerObject = controls.getObject();
-            
-            const playerHalfHeight = CONFIG.PLAYER_HEIGHT / 2;
-            const playerHalfWidth = CONFIG.PLAYER_WIDTH / 2;
-            
-            playerCollider.setFromCenterAndSize(
-                playerObject.position,
-                new THREE.Vector3(CONFIG.PLAYER_WIDTH, CONFIG.PLAYER_HEIGHT, CONFIG.PLAYER_WIDTH)
-            );
-            
-            let moveX = totalMove.x;
-            let moveZ = totalMove.z;
-            
-            if (Math.abs(moveX) > 0.001) {
-                const futureColliderX = playerCollider.clone().translate(new THREE.Vector3(moveX, 0, 0));
-                let canMoveX = true;
-                
-                for (const obj of physicsObjects) {
-                    if (futureColliderX.intersectsBox(obj.boundingBox)) {
-                        canMoveX = false;
-                        break;
-                    }
-                }
-                
-                if (!canMoveX) moveX = 0;
-            }
-            
-            if (Math.abs(moveZ) > 0.001) {
-                const futureColliderZ = playerCollider.clone().translate(new THREE.Vector3(0, 0, moveZ));
-                let canMoveZ = true;
-                
-                for (const obj of physicsObjects) {
-                    if (futureColliderZ.intersectsBox(obj.boundingBox)) {
-                        canMoveZ = false;
-                        break;
-                    }
-                }
-                
-                if (!canMoveZ) moveZ = 0;
-            }
-            
-            if (Math.abs(moveX) > 0.001 || Math.abs(moveZ) > 0.001) {
-                playerObject.position.x += moveX;
-                playerObject.position.z += moveZ;
-            }
-        }
-    }
-
-    function setupVRShootEvents() {
-        controllerLeft.addEventListener('selectstart', () => {
-            if (vrActive) {
-                handleVRShoot('left');
-            }
-        });
-        
-        controllerRight.addEventListener('squeezestart', () => {
-            if (vrActive) {
-                handleVRShoot('right');
-            }
-        });
-        
-        controllerLeft.addEventListener('squeezestart', () => {
-            if (vrActive) {
-                handleVRShoot('left_alt');
-            }
-        });
-        
-        controllerRight.addEventListener('selectstart', () => {
-            if (vrActive && !arcLine.visible) {
-                handleVRShoot('right_alt');
-            }
-        });
-    }
-
-    function handleVRShoot(hand) {
-        if (!vrActive || playerLife <= 0) return;
-
-        const now = Date.now();
-        if (now - lastShootTime < 300) return;
-        lastShootTime = now;
-        
-        shootSound.currentTime = 0;
-        shootSound.play();
-
-        triggerHapticFeedback(hand === 'left' || hand === 'left_alt' ? 'left' : 'right', 0.5, 100);
-        
-        let shootOrigin;
-        let shootDirection;
-        
-        if (hand === 'left' || hand === 'left_alt') {
-            shootOrigin = new THREE.Vector3().setFromMatrixPosition(controllerLeft.matrixWorld);
-            shootDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(controllerLeft.quaternion).normalize();
-        } else {
-            shootOrigin = new THREE.Vector3().setFromMatrixPosition(controllerRight.matrixWorld);
-            shootDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(controllerRight.quaternion).normalize();
-        }
-        
-        performVRShoot(shootOrigin, shootDirection);
-    }
-
-    function performVRShoot(origin, direction) {
-        raycaster.set(origin, direction);
-        raycaster.far = CONFIG.SHOOT_RANGE;
-        
-        const shootableObjects = physicsObjects.map(p => p.mesh);
-        const hits = raycaster.intersectObjects(shootableObjects, true);
-        
-        let hitEnemy = false;
-        
-        if (hits.length > 0) {
-            const hit = hits[0];
-            
-            let target = hit.object;
-            while (target && !enemies.includes(target)) target = target.parent;
-            
-            if (target && target.userData && target.userData.alive) {
-                hitEnemy = true;
-                applyDamageToEnemy(target, CONFIG.SHOOT_DAMAGE);
-                
-                const p = new THREE.Mesh(new THREE.SphereGeometry(4, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffff66 }));
-                p.position.copy(hit.point);
-                scene.add(p);
-                setTimeout(() => scene.remove(p), 120);
-            } else {
-                const p = new THREE.Mesh(new THREE.SphereGeometry(2.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffcc88 }));
-                p.position.copy(hit.point);
-                scene.add(p);
-                setTimeout(() => scene.remove(p), 120);
-            }
-        } else {
-            const missPoint = origin.clone().add(direction.multiplyScalar(CONFIG.SHOOT_RANGE));
-            const p = new THREE.Mesh(new THREE.SphereGeometry(2.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0x666666 }));
-            p.position.copy(missPoint);
-            scene.add(p);
-            setTimeout(() => scene.remove(p), 120);
-        }
-    }
-
-    function triggerHapticFeedback(hand, intensity, duration) {
-        const session = renderer.xr.getSession();
-        if (!session) return;
-        
-        let controller;
-        if (hand === 'left') {
-            controller = controllerLeft;
-        } else {
-            controller = controllerRight;
-        }
-        
-        const gamepad = controller.userData.gamepad;
-        if (gamepad && gamepad.hapticActuators && gamepad.hapticActuators.length > 0) {
-            gamepad.hapticActuators[0].pulse(intensity, duration);
-        } else if (gamepad && gamepad.vibrationActuator) {
-            gamepad.vibrationActuator.playEffect("dual-rumble", {
-                duration: duration,
-                strongMagnitude: intensity,
-                weakMagnitude: intensity
-            });
-        }
-    }
-
-    init();
-    animate();
-
-    function init() {
-        clock = new THREE.Clock();
-        scene = new THREE.Scene();
-        scene.fog = new THREE.Fog(0xcccccc, 400, 1300);
-
-        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 3000);
-        
-        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        document.body.appendChild(renderer.domElement);
+        renderer.xr.enabled = true;
+        renderer.autoClear = false;
+        
+        console.log("Renderer inicializado correctamente");
+        return renderer;
+    } catch (error) {
+        console.error("Error al inicializar renderer:", error);
+        alert("Error al inicializar WebGL. Verifica que tu navegador soporte WebGL y prueba en Chrome o Firefox.");
+        throw error;
+    }
+}
 
-        initVR();
+/** ========= INICIALIZAR ESCENAS ========= */
+function initScenes() {
+    // Escena principal
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x06101a);
+    scene.fog = new THREE.FogExp2(0x06101a, CONFIG.FOG_DENSITY);
+    
+    // Escena de fondo
+    bgScene = new THREE.Scene();
+    bgCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    
+    // Cámara del jugador
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
+    player = new THREE.Group();
+    player.add(camera);
+    scene.add(player);
+    
+    console.log("Escenas inicializadas");
+}
 
-        stats = new Stats();
-        statsContainer.appendChild(stats.dom);
+/** ========= INICIALIZAR LUCES - TEMÁTICA ALIENÍGENA ========= */
+function initLights() {
+    // Luz ambiental alienígena (verde/azul)
+    const ambientLight = new THREE.AmbientLight(0x223344, 0.3);
+    scene.add(ambientLight);
+    
+    // Luz hemisférica con tonos alienígenas
+    hemiLight = new THREE.HemisphereLight(0x4477aa, 0x112233, 0.4);
+    scene.add(hemiLight);
+    
+    // Luz direccional principal (como luz de luna alienígena)
+    mainLight = new THREE.DirectionalLight(0xaaccff, 0.8);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.set(1024, 1024);
+    mainLight.shadow.camera.near = 0.5;
+    mainLight.shadow.camera.far = 500;
+    mainLight.position.set(30, 50, 30);
+    
+    // Configurar sombras
+    mainLight.shadow.camera.left = -100;
+    mainLight.shadow.camera.right = 100;
+    mainLight.shadow.camera.top = 100;
+    mainLight.shadow.camera.bottom = -100;
+    mainLight.shadow.bias = -0.001;
+    
+    scene.add(mainLight);
+    
+    // Luz de neón/portal (efecto especial)
+    const portalLight = new THREE.PointLight(0x22ff88, 1.5, 200);
+    portalLight.position.set(0, 20, 0);
+    scene.add(portalLight);
+    
+    // Luces puntuales para ambiente (efecto de laboratorio alienígena)
+    for (let i = 0; i < 4; i++) {
+        const pointLight = new THREE.PointLight(0x4477ff, 0.5, 150);
+        const angle = (i / 4) * Math.PI * 2;
+        pointLight.position.set(
+            Math.cos(angle) * 200,
+            30,
+            Math.sin(angle) * 200
+        );
+        scene.add(pointLight);
+    }
+    
+    console.log("Iluminación de temática alienígena inicializada");
+}
 
-        const aspect = (window.innerWidth * 0.25) / (window.innerHeight * 0.25);
-        thirdPersonCamera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
-        scene.add(thirdPersonCamera);
+/** ========= INICIALIZAR CIELO ========= */
+function initSky() {
+    try {
+        // Cargar HDR como fondo
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load(CONFIG.BACKGROUND_TEX, (texture) => {
+            // Configurar la textura HDR
+            texture.mapping = THREE.EquirectangularReflectionMapping;
+            texture.encoding = THREE.sRGBEncoding;
+            
+            // Usar como fondo de la escena principal
+            scene.background = texture;
+            scene.environment = texture; // Para reflexiones
+            
+            // Crear skybox más simple
+            const skyGeo = new THREE.SphereGeometry(1000, 60, 40);
+            const skyMat = new THREE.MeshBasicMaterial({
+                map: texture,
+                side: THREE.BackSide
+            });
+            
+            skyMesh = new THREE.Mesh(skyGeo, skyMat);
+            skyMesh.renderOrder = -2;
+            bgScene.add(skyMesh);
+            
+            console.log("Fondo HDR cargado correctamente");
+        }, undefined, (error) => {
+            console.error("Error al cargar HDR:", error);
+            // Fallback a color sólido
+            scene.background = new THREE.Color(0x87CEEB);
+        });
+        
+        // Estrellas simplificadas (mantener como complemento)
+        const starCount = 1000;
+        const starPositions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount; i++) {
+            const r = 900 + Math.random() * 200;
+            const a = Math.random() * Math.PI * 2;
+            const b = Math.acos(2 * Math.random() - 1);
+            starPositions[i * 3] = r * Math.sin(b) * Math.cos(a);
+            starPositions[i * 3 + 1] = r * Math.cos(b);
+            starPositions[i * 3 + 2] = r * Math.sin(b) * Math.sin(a);
+        }
+        
+        const starGeo = new THREE.BufferGeometry();
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starMat = new THREE.PointsMaterial({
+            size: 1.5,
+            sizeAttenuation: false,
+            color: 0xffffff,
+            fog: false,
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        starField = new THREE.Points(starGeo, starMat);
+        starField.renderOrder = -1;
+        bgScene.add(starField);
+        
+    } catch (error) {
+        console.error("Error al inicializar cielo:", error);
+        scene.background = new THREE.Color(0x06101a);
+    }
+}
 
-        const texLoader = new THREE.TextureLoader();
-        const wallMap = texLoader.load(CONFIG.WALL_TEX);
-        wallMap.wrapS = wallMap.wrapT = THREE.RepeatWrapping;
-        wallMap.repeat.set(1, 1);
+/** ========= INICIALIZAR AUDIO ========= */
+function initAudio() {
+    try {
+        listener = new THREE.AudioListener();
+        camera.add(listener);
+        
+        // Iniciar música de fondo
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        if (backgroundMusic) {
+            backgroundMusic.volume = 0.3;
+            backgroundMusic.play().catch(e => console.log('Audio bloqueado, requiere interacción del usuario:', e));
+        }
+        
+        console.log("Audio inicializado");
+    } catch (error) {
+        console.error("Error al inicializar audio:", error);
+    }
+}
 
+/** ========= DISPARAR - CON SONIDOS ========= */
+function shoot() {
+    // Reproducir sonido de disparo
+    const shootSound = document.getElementById('shootSound');
+    if (shootSound) {
+        shootSound.currentTime = 0;
+        shootSound.play().catch(e => console.log('Error al reproducir sonido de disparo:', e));
+    }
+    
+    // Lógica de disparo
+    if (camera && enemies.length > 0) {
+        const raycaster = new THREE.Raycaster();
+        const direction = new THREE.Vector3(0, 0, -1);
+        direction.applyQuaternion(camera.quaternion);
+        raycaster.set(camera.position, direction);
+        
+        const intersects = raycaster.intersectObjects(enemies);
+        
+        if (intersects.length > 0) {
+            const enemy = intersects[0].object;
+            
+            if (enemy.userData.alive) {
+                // Aplicar daño
+                enemy.userData.health -= 25;
+                
+                // Reproducir sonido de explosión
+                const explosionSound = document.getElementById('explosionSound');
+                if (explosionSound) {
+                    explosionSound.currentTime = 0;
+                    explosionSound.play().catch(e => console.log('Error al reproducir explosión:', e));
+                }
+                
+                // Efecto visual de daño
+                enemy.material.emissive.setHex(0xff0000);
+                setTimeout(() => {
+                    if (enemy.material) {
+                        enemy.material.emissive.setHex(0x220000);
+                    }
+                }, 100);
+                
+                // Verificar si el enemigo murió
+                if (enemy.userData.health <= 0) {
+                    enemy.userData.alive = false;
+                    enemy.visible = false;
+                    
+                    // Reproducir sonido de muerte
+                    const deathSound = document.getElementById('enemyDeathSound');
+                    if (deathSound) {
+                        deathSound.currentTime = 0;
+                        deathSound.play().catch(e => console.log('Error al reproducir muerte:', e));
+                    }
+                }
+                
+                // Actualizar HUD
+                updateHUD();
+            }
+        }
+    }
+}
+
+/** ========= CONTROL DE DISPARO EN VR ========= */
+function initVRShooting() {
+    if (controllerRight) {
+        controllerRight.addEventListener('selectstart', () => {
+            shoot();
+            
+            // Disparo continuo mientras se mantiene presionado
+            controllerRight.userData.shootingInterval = setInterval(shoot, 200);
+        });
+        
+        controllerRight.addEventListener('selectend', () => {
+            // Detener disparo continuo
+            if (controllerRight.userData.shootingInterval) {
+                clearInterval(controllerRight.userData.shootingInterval);
+                controllerRight.userData.shootingInterval = null;
+            }
+        });
+    }
+    
+    // También disparar con clic del mouse (para pruebas en desktop)
+    document.addEventListener('click', (e) => {
+        if (!renderer.xr.isPresenting && gameInitialized) {
+            shoot();
+        }
+    });
+    
+    // Disparar con barra espaciadora (para pruebas en desktop)
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !renderer.xr.isPresenting && gameInitialized) {
+            shoot();
+            e.preventDefault();
+        }
+    });
+}
+
+/** ========= INICIALIZAR VR ========= */
+function initVR() {
+    try {
+        // Botón VR
+        vrButton = VRButton.createButton(renderer);
+        vrButton.classList.add('vr-button');
+        vrButton.style.display = 'block';
+        document.body.appendChild(vrButton);
+        
+        console.log("Botón VR creado");
+        
+        // Evento cuando se entra en VR
+        vrButton.addEventListener('click', () => {
+            setTimeout(() => {
+                if (renderer.xr.isPresenting) {
+                    showVREnterSign();
+                }
+            }, 500);
+        });
+        
+        // Esperar a que el renderer esté listo
+        setTimeout(() => {
+            // Controladores
+            controllerLeft = renderer.xr.getController(0);
+            controllerRight = renderer.xr.getController(1);
+            
+            if (controllerLeft && controllerRight) {
+                scene.add(controllerLeft);
+                scene.add(controllerRight);
+                
+                const controllerModelFactory = new XRControllerModelFactory();
+                
+                grip0 = renderer.xr.getControllerGrip(0);
+                grip0.add(controllerModelFactory.createControllerModel(grip0));
+                scene.add(grip0);
+                
+                grip1 = renderer.xr.getControllerGrip(1);
+                grip1.add(controllerModelFactory.createControllerModel(grip1));
+                scene.add(grip1);
+                
+                console.log("Controladores VR inicializados");
+                
+                // Arco de teleport
+                arcMatOK = new THREE.LineBasicMaterial({ 
+                    color: 0x7ad1ff, 
+                    transparent: true, 
+                    opacity: 0.95 
+                });
+                arcMatBAD = new THREE.LineBasicMaterial({ 
+                    color: 0xff5a5a, 
+                    transparent: true, 
+                    opacity: 0.95 
+                });
+                
+                arcGeo = new THREE.BufferGeometry().setFromPoints(
+                    new Array(CONFIG.ARC_STEPS).fill(0).map(() => new THREE.Vector3())
+                );
+                arcLine = new THREE.Line(arcGeo, arcMatOK);
+                arcLine.visible = false;
+                scene.add(arcLine);
+                
+                marker = new THREE.Mesh(
+                    new THREE.RingGeometry(0.25, 0.30, 32),
+                    new THREE.MeshBasicMaterial({ 
+                        color: 0x7ad1ff, 
+                        transparent: true, 
+                        opacity: 0.9, 
+                        side: THREE.DoubleSide 
+                    })
+                );
+                marker.rotation.x = -Math.PI / 2;
+                marker.visible = false;
+                scene.add(marker);
+                
+                teleportPoint = new THREE.Vector3();
+                arcPointsBuf = new Float32Array(CONFIG.ARC_STEPS * 3);
+                
+                // Eventos de teleport
+                controllerRight.addEventListener('selectstart', () => { 
+                    arcLine.visible = true; 
+                    marker.visible = true; 
+                });
+                
+                controllerRight.addEventListener('selectend', () => {
+                    arcLine.visible = false;
+                    marker.visible = false;
+                    if (teleportValid) {
+                        const floorY = -0.1 + 1.6;
+                        player.position.set(teleportPoint.x, floorY, teleportPoint.z);
+                        player.position.copy(resolveCollisions(player.position, player.position));
+                    }
+                });
+                
+                // Inicializar sistema de disparo
+                initVRShooting();
+                
+                console.log("Sistema de teleport y disparo inicializado");
+            } else {
+                console.warn("Controladores VR no disponibles");
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.error("Error al inicializar VR:", error);
+        // Crear botón VR simple como fallback
+        const fallbackVRButton = document.createElement('button');
+        fallbackVRButton.textContent = 'VR NO DISPONIBLE';
+        fallbackVRButton.classList.add('vr-button');
+        fallbackVRButton.style.background = '#ff4444';
+        fallbackVRButton.style.cursor = 'not-allowed';
+        document.body.appendChild(fallbackVRButton);
+    }
+}
+
+/** ========= FUNCIÓN PARA MOSTRAR LETRERO VR - TEMPORAL ========= */
+function showVREnterSign() {
+    const vrSign = document.getElementById('vr-enter-sign');
+    const vrLife = document.getElementById('vr-life');
+    const vrEnemies = document.getElementById('vr-enemies');
+    const lifeElement = document.getElementById('life');
+    
+    if (vrSign && vrLife && vrEnemies && lifeElement) {
+        // Actualizar valores
+        vrLife.textContent = lifeElement.textContent;
+        vrEnemies.textContent = enemies.filter(e => e.userData.alive).length;
+        
+        // Mostrar letrero temporalmente
+        vrSign.style.display = 'block';
+        
+        console.log("Letrero VR mostrado temporalmente");
+        
+        // Ocultar automáticamente después de 5 segundos
+        setTimeout(() => {
+            vrSign.style.display = 'none';
+            console.log("Letrero VR ocultado");
+        }, 5000);
+    }
+}
+
+// -------------------------------------------------------------------
+// ---------- GENERACIÓN DEL LABERINTO ----------
+// -------------------------------------------------------------------
+/** ========= GENERACIÓN DEL LABERINTO (altura reducida) ========= */
+function generateMaze(rows, cols, cellSize) {
+    console.log(`Generando laberinto ${rows}x${cols} (altura: ${CONFIG.WALL_HEIGHT})...`);
+    
+    const grid = [];
+    for (let r = 0; r < rows; r++) {
+        grid[r] = [];
+        for (let c = 0; c < cols; c++) {
+            grid[r][c] = { 
+                r, c, 
+                visited: false, 
+                walls: [true, true, true, true]
+            };
+        }
+    }
+    
+    const stack = [];
+    let current = grid[0][0];
+    current.visited = true;
+    
+    function getNeighbors(cell) {
+        const n = [];
+        const { r, c } = cell;
+        
+        if (r > 0 && !grid[r - 1][c].visited) n.push(grid[r - 1][c]);
+        if (c < cols - 1 && !grid[r][c + 1].visited) n.push(grid[r][c + 1]);
+        if (r < rows - 1 && !grid[r + 1][c].visited) n.push(grid[r + 1][c]);
+        if (c > 0 && !grid[r][c - 1].visited) n.push(grid[r][c - 1]);
+        
+        return n;
+    }
+    
+    while (true) {
+        const neighbors = getNeighbors(current);
+        
+        if (neighbors.length > 0) {
+            const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+            stack.push(current);
+            
+            const dr = next.r - current.r;
+            const dc = next.c - current.c;
+            
+            if (dr === -1) {
+                current.walls[0] = false;
+                next.walls[2] = false;
+            } else if (dc === 1) {
+                current.walls[1] = false;
+                next.walls[3] = false;
+            } else if (dr === 1) {
+                current.walls[2] = false;
+                next.walls[0] = false;
+            } else if (dc === -1) {
+                current.walls[3] = false;
+                next.walls[1] = false;
+            }
+            
+            current = next;
+            current.visited = true;
+        } else if (stack.length > 0) {
+            current = stack.pop();
+        } else {
+            break;
+        }
+    }
+    
+    const startX = -(cols * cellSize) / 2;
+    const startZ = -(rows * cellSize) / 2;
+    const wallHeightHalf = CONFIG.WALL_HEIGHT / 2; // Usar la nueva altura
+    
+    const wallGeo = new THREE.BoxGeometry(
+        cellSize + CONFIG.WALL_THICKNESS, 
+        CONFIG.WALL_HEIGHT, // Altura reducida
+        CONFIG.WALL_THICKNESS
+    );
+    
+    // Cargar textura de paredes
+    const textureLoader = new THREE.TextureLoader();
+    let wallMaterial;
+    
+    try {
+        const wallTexture = textureLoader.load(CONFIG.WALL_TEX, 
+            (texture) => {
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                const repeatX = (cellSize + CONFIG.WALL_THICKNESS) / 50;
+                const repeatY = CONFIG.WALL_HEIGHT / 50;
+                texture.repeat.set(repeatX, repeatY);
+                console.log("Textura de paredes cargada correctamente");
+            },
+            undefined,
+            (error) => {
+                console.warn("Error al cargar textura de paredes:", error);
+                wallMaterial = new THREE.MeshStandardMaterial({
+                    color: 0x666666,
+                    roughness: 0.8,
+                    metalness: 0.2
+                });
+            }
+        );
+        
         wallMaterial = new THREE.MeshStandardMaterial({
-            map: wallMap,
+            map: wallTexture,
             roughness: 0.8,
             metalness: 0.2
         });
-
-        const fbx = new FBXLoader();
-        const animLoader = new FBXLoader();
-        const charPath = 'models/fbx/Jab Cross.fbx';
+    } catch (error) {
+        console.warn("Error al crear material:", error);
+        wallMaterial = new THREE.MeshStandardMaterial({
+            color: 0x666666,
+            roughness: 0.8,
+            metalness: 0.2
+        });
+    }
+    
+    function createWall(posX, posZ, rotY) {
+        const wall = new THREE.Mesh(wallGeo, wallMaterial);
+        wall.position.set(posX, wallHeightHalf, posZ);
+        wall.rotation.y = rotY;
+        wall.receiveShadow = true;
+        wall.castShadow = true;
+        scene.add(wall);
         
-        const animationFiles = [
-            ['Running',           'models/fbx/Running.fbx'],
-            ['Running Up Stairs', 'models/fbx/Running Up Stairs.fbx'],
-            ['Jump',              'models/fbx/Jump.fbx'],
-            ['Walking',           'models/fbx/Walking.fbx']
-        ];
-
-        fbx.load(charPath, (fbxScene) => {
-            playerModel = fbxScene;
-            const modelHeight = 150;
-            const targetScale = CONFIG.PLAYER_HEIGHT / modelHeight;
-            playerModel.scale.set(targetScale, targetScale, targetScale); 
-            
-            playerModel.traverse(c => {
-                if (c.isMesh) {
-                    c.castShadow = true;
-                    c.receiveShadow = false;
-                }
-            });
-
-            playerModel.traverse(c => {
-                if (c.isBone && (c.name.includes('Hips') || c.name.includes('hips') || c.name.includes('mixamorig:Hips'))) {
-                    playerRootBone = c;
-                    console.log("Hueso raíz encontrado:", c.name);
-                }
-            });
-            
-            if (playerRootBone) {
-                defaultRootY = playerRootBone.position.y;
-            }
-
-            mixer = new THREE.AnimationMixer(playerModel);
-
-            if (fbxScene.animations && fbxScene.animations.length > 0) {
-                const mainClip = fbxScene.animations[0];
-                actions['Jab Cross'] = mixer.clipAction(mainClip);
-                console.log(`Animación base cargada: ${mainClip.name}`);
-            }
-
-            animationFiles.forEach(([name, path]) => {
-                animLoader.load(path, (animFbx) => {
-                    if (animFbx.animations && animFbx.animations.length > 0) {
-                        const clip = animFbx.animations[0];
-                        actions[name] = mixer.clipAction(clip);
-                        console.log(`Animación cargada: '${name}' desde ${path}`);
-                    }
-                }, undefined, err => console.warn(`Error cargando animación ${path}:`, err));
-            });
-
-            if (actions['Jab Cross']) {
-                playAction('Jab Cross');
-            }
-            
-            scene.add(playerModel);
-
-        }, undefined, err => console.warn('No se cargó el modelo del jugador:', err));
-
-        controls = new PointerLockControls(camera, renderer.domElement);
-        
-        document.body.addEventListener('click', () => {
-            if (playerLife > 0 && !vrActive) {
-                 controls.lock();
-            }
+        wall.updateMatrixWorld();
+        const wallBox = new THREE.Box3().setFromObject(wall);
+        physicsObjects.push({ 
+            mesh: wall, 
+            boundingBox: wallBox, 
+            static: true 
         });
         
-        controls.addEventListener('lock', () => showMessage('Controles desbloqueados', 1500));
-        controls.addEventListener('unlock', () => showMessage('Controles bloqueados', 1500));
-        
-        scene.add(controls.getObject());
+        return wall;
+    }
+    
+    // Crear todas las paredes internas
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const cell = grid[r][c];
+            const cx = startX + c * cellSize + cellSize / 2;
+            const cz = startZ + r * cellSize + cellSize / 2;
+            
+            if (cell.walls[0]) createWall(cx, cz - cellSize / 2, 0);
+            if (cell.walls[1]) createWall(cx + cellSize / 2, cz, Math.PI / 2);
+            if (cell.walls[2]) createWall(cx, cz + cellSize / 2, 0);
+            if (cell.walls[3]) createWall(cx - cellSize / 2, cz, Math.PI / 2);
+        }
+    }
+    
+    // Calcular y marcar el camino hacia el portal
+    const path = findPathToGoal(grid, rows, cols);
+    createPathMarkers(path, startX, startZ, cellSize);
+    
+    scene.userData.maze = { 
+        grid, 
+        startX, 
+        startZ, 
+        rows, 
+        cols, 
+        cellSize,
+        path: path
+    };
+    
+    console.log(`Laberinto generado: ${rows}x${cols} (altura: ${CONFIG.WALL_HEIGHT}) con marcadores de ruta`);
+    return grid;
+}
 
-        const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
-        scene.add(hemi);
+/** ========= ENCONTRAR CAMINO AL PORTAL ========= */
+function findPathToGoal(grid, rows, cols) {
+    console.log("Calculando camino hacia el portal...");
+    
+    // El portal está en la esquina inferior derecha (última celda)
+    const startCell = grid[0][0]; // Celda inicial
+    const goalCell = grid[rows-1][cols-1]; // Celda del portal
+    
+    // Usar BFS para encontrar el camino
+    const queue = [{ cell: startCell, path: [startCell] }];
+    const visited = new Set();
+    visited.add(startCell);
+    
+    while (queue.length > 0) {
+        const { cell, path } = queue.shift();
         
-        const sun = new THREE.DirectionalLight(0xffffff, 1.0);
-        sun.position.set(100, 300, 100);
-        sun.castShadow = true;
-        sun.shadow.mapSize.width = 1024;
-        sun.shadow.mapSize.height = 1024;
-        scene.add(sun);
-
-        const floorMap = texLoader.load(CONFIG.FLOOR_TEX);
-        floorMap.wrapS = floorMap.wrapT = THREE.RepeatWrapping;
-        floorMap.repeat.set(12, 12);
+        // Si llegamos al portal
+        if (cell === goalCell) {
+            console.log("Camino encontrado con", path.length, "celdas");
+            return path;
+        }
         
-        const floorMat = new THREE.MeshStandardMaterial({ map: floorMap, roughness: 0.9 });
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), floorMat);
-        floor.rotation.x = -Math.PI / 2;
-        floor.receiveShadow = true;
-        scene.add(floor);
-
-        new RGBELoader().load(CONFIG.HDR_PATH, tex => {
-            tex.mapping = THREE.EquirectangularReflectionMapping;
-            scene.environment = tex;
-            scene.background = tex;
-        }, undefined, err => console.warn('HDR no cargado:', err));
-
-        generateMaze(CONFIG.MAZE_ROWS, CONFIG.MAZE_COLS, CONFIG.CELL_SIZE);
-        spawnEnemiesInMaze(CONFIG.ENEMY_COUNT);
-        createGoalAtEnd();
+        // Obtener vecinos accesibles
+        const neighbors = [];
+        const { r, c, walls } = cell;
         
+        // Norte (pared 0)
+        if (!walls[0] && r > 0) neighbors.push(grid[r-1][c]);
+        // Este (pared 1)
+        if (!walls[1] && c < cols-1) neighbors.push(grid[r][c+1]);
+        // Sur (pared 2)
+        if (!walls[2] && r < rows-1) neighbors.push(grid[r+1][c]);
+        // Oeste (pared 3)
+        if (!walls[3] && c > 0) neighbors.push(grid[r][c-1]);
+        
+        for (const neighbor of neighbors) {
+            if (!visited.has(neighbor)) {
+                visited.add(neighbor);
+                queue.push({ 
+                    cell: neighbor, 
+                    path: [...path, neighbor] 
+                });
+            }
+        }
+    }
+    
+    console.log("No se encontró camino al portal");
+    return [];
+}
+
+/** ========= CREAR MARCADORES DE RUTA ========= */
+function createPathMarkers(path, startX, startZ, cellSize) {
+    if (path.length === 0) return;
+    
+    console.log("Creando marcadores de ruta...");
+    
+    const markerGeo = new THREE.CylinderGeometry(8, 8, 2, 16);
+    const markerMat = new THREE.MeshStandardMaterial({ 
+        color: 0x22ff88,
+        emissive: 0x22ff88,
+        emissiveIntensity: 0.5,
+        transparent: true,
+        opacity: 0.8
+    });
+    
+    const arrowGeo = new THREE.ConeGeometry(6, 15, 8);
+    const arrowMat = new THREE.MeshStandardMaterial({ 
+        color: 0x22ff88,
+        emissive: 0x22ff88,
+        emissiveIntensity: 0.7
+    });
+    
+    // Crear marcadores en cada celda del camino
+    for (let i = 0; i < path.length; i++) {
+        const cell = path[i];
+        const cx = startX + cell.c * cellSize + cellSize / 2;
+        const cz = startZ + cell.r * cellSize + cellSize / 2;
+        
+        // Marcador de piso (solo cada 3 celdas para no saturar)
+        if (i % 3 === 0 || i === path.length - 1) {
+            const marker = new THREE.Mesh(markerGeo, markerMat);
+            marker.position.set(cx, 0.5, cz);
+            marker.rotation.x = Math.PI / 2;
+            marker.receiveShadow = true;
+            scene.add(marker);
+            
+            // Hacer que el marcador parpadee
+            animateMarker(marker, i * 100);
+        }
+        
+        // Flecha indicadora (solo en puntos clave)
+        if (i < path.length - 1 && (i % 5 === 0 || i === path.length - 2)) {
+            const nextCell = path[i + 1];
+            const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+            arrow.position.set(cx, 15, cz);
+            
+            // Calcular dirección hacia la siguiente celda
+            const dx = (nextCell.c - cell.c) * cellSize;
+            const dz = (nextCell.r - cell.r) * cellSize;
+            const angle = Math.atan2(dx, dz);
+            arrow.rotation.x = Math.PI / 2;
+            arrow.rotation.z = -angle;
+            
+            scene.add(arrow);
+            
+            // Animación de flotación
+            animateArrow(arrow, i * 200);
+        }
+    }
+
+}
+
+/** ========= ANIMAR MARCADORES ========= */
+function animateMarker(marker, delay) {
+    const originalY = marker.position.y;
+    let time = delay;
+    
+    function animate() {
+        time += 0.05;
+        marker.position.y = originalY + Math.sin(time) * 2;
+        marker.material.opacity = 0.6 + Math.sin(time * 2) * 0.2;
+        
+        // Continuar animación
+        if (marker.parent) {
+            requestAnimationFrame(animate);
+        }
+    }
+    
+    setTimeout(() => animate(), delay % 1000);
+}
+
+/** ========= ANIMAR FLECHAS ========= */
+function animateArrow(arrow, delay) {
+    const originalY = arrow.position.y;
+    let time = delay;
+    
+    function animate() {
+        time += 0.03;
+        arrow.position.y = originalY + Math.sin(time) * 3;
+        arrow.rotation.y += 0.01;
+        
+        // Continuar animación
+        if (arrow.parent) {
+            requestAnimationFrame(animate);
+        }
+    }
+    
+    setTimeout(() => animate(), delay % 1000);
+}
+
+// -------------------------------------------------------------------
+// ---------- CREACIÓN DE ENEMIGOS ----------
+// -------------------------------------------------------------------
+function spawnEnemiesInMaze(count) {
+    const maze = scene.userData.maze;
+    if (!maze) {
+        console.error("No hay laberinto generado");
+        return;
+    }
+    
+    const { startX, startZ, rows, cols, cellSize } = maze;
+    
+    const enemyGeo = new THREE.BoxGeometry(15, 15, 15);
+    const enemyMat = new THREE.MeshStandardMaterial({ 
+        color: 0xdd4444, 
+        roughness: 0.8,
+        emissive: 0x220000,
+        emissiveIntensity: 0.1
+    });
+    
+    let placed = 0;
+    const maxAttempts = count * 10;
+    let attempts = 0;
+    
+    while (placed < count && attempts < maxAttempts) {
+        attempts++;
+        
+        const r = 1 + Math.floor(Math.random() * (rows - 2));
+        const c = 1 + Math.floor(Math.random() * (cols - 2));
+        
+        const x = startX + c * cellSize + cellSize / 2;
+        const z = startZ + r * cellSize + cellSize / 2;
+        
+        const startCellX = startX + cellSize / 2;
+        const startCellZ = startZ + cellSize / 2;
+        const distanceToStart = Math.hypot(x - startCellX, z - startCellZ);
+        
+        if (distanceToStart < cellSize * 2) continue;
+        
+        let tooClose = false;
+        for (const enemy of enemies) {
+            if (enemy.position.distanceTo(new THREE.Vector3(x, 7.5, z)) < cellSize) {
+                tooClose = true;
+                break;
+            }
+        }
+        
+        if (tooClose) continue;
+        
+        const enemy = new THREE.Mesh(enemyGeo, enemyMat);
+        enemy.position.set(x, 7.5, z);
+        enemy.castShadow = true;
+        enemy.receiveShadow = true;
+        
+        enemy.userData = { 
+            health: CONFIG.ENEMY_HEALTH, 
+            alive: true, 
+            speed: CONFIG.ENEMY_SPEED_MIN + Math.random() * (CONFIG.ENEMY_SPEED_MAX - CONFIG.ENEMY_SPEED_MIN),
+            lastAttack: 0
+        };
+        
+        scene.add(enemy);
+        
+        enemy.updateMatrixWorld();
+        const enemyBox = new THREE.Box3().setFromObject(enemy);
+        
+        enemies.push(enemy);
+        physicsObjects.push({ 
+            mesh: enemy, 
+            boundingBox: enemyBox, 
+            mass: 50 
+        });
+        
+        placed++;
+    }
+    
+    console.log(`${placed} enemigos colocados en el laberinto`);
+}
+
+// -------------------------------------------------------------------
+// ---------- CREACIÓN DEL PORTAL ----------
+// -------------------------------------------------------------------
+function createGoalAtEnd() {
+    const maze = scene.userData.maze;
+    if (!maze) return;
+    
+    const { startX, startZ, rows, cols, cellSize } = maze;
+    
+    const goalX = startX + (cols - 1) * cellSize + cellSize / 2;
+    const goalZ = startZ + (rows - 1) * cellSize + cellSize / 2;
+    
+    const portalGeo = new THREE.TorusGeometry(30, 6, 16, 100);
+    const portalMat = new THREE.MeshStandardMaterial({ 
+        color: 0x22ff88, 
+        emissive: 0x22ff88, 
+        emissiveIntensity: 0.5,
+        transparent: true,
+        opacity: 0.9
+    });
+    
+    const portal = new THREE.Mesh(portalGeo, portalMat);
+    portal.rotation.x = Math.PI / 2;
+    portal.position.set(goalX, 45, goalZ);
+    portal.castShadow = true;
+    scene.add(portal);
+    
+    createPortalParticles(goalX, goalZ);
+    
+    scene.userData.goal = { 
+        mesh: portal, 
+        position: new THREE.Vector3(goalX, 0, goalZ),
+        radius: 30
+    };
+    
+    console.log(`Portal creado en posición: (${goalX.toFixed(1)}, ${goalZ.toFixed(1)})`);
+}
+
+// -------------------------------------------------------------------
+// ---------- PARTÍCULAS DEL PORTAL ----------
+// -------------------------------------------------------------------
+function createPortalParticles(x, z) {
+    const particleCount = 50; // Reducido para mejor rendimiento
+    const particleGeo = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    
+    for (let i = 0; i < particleCount; i++) {
+        const radius = 25 + Math.random() * 10;
+        const angle = Math.random() * Math.PI * 2;
+        const height = 20 + Math.random() * 50;
+        
+        positions[i * 3] = x + Math.cos(angle) * radius;
+        positions[i * 3 + 1] = height;
+        positions[i * 3 + 2] = z + Math.sin(angle) * radius;
+        
+        colors[i * 3] = 0.2 + Math.random() * 0.3;
+        colors[i * 3 + 1] = 0.8 + Math.random() * 0.2;
+        colors[i * 3 + 2] = 0.3 + Math.random() * 0.2;
+    }
+    
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    const particleMat = new THREE.PointsMaterial({
+        size: 2,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.7
+    });
+    
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+    
+    scene.userData.portalParticles = {
+        mesh: particles,
+        time: 0,
+        positions: positions
+    };
+}
+
+// -------------------------------------------------------------------
+// ---------- CREACIÓN DEL PISO ----------
+// -------------------------------------------------------------------
+/** ========= CREACIÓN DEL PISO (con textura) ========= */
+function createFloor() {
+    const maze = scene.userData.maze;
+    if (!maze) return;
+    
+    const { rows, cols, cellSize } = maze;
+    
+    const floorWidth = cols * cellSize + cellSize * 2;
+    const floorHeight = rows * cellSize + cellSize * 2;
+    
+    // Cargar textura del piso
+    const textureLoader = new THREE.TextureLoader();
+    const floorTexture = textureLoader.load(CONFIG.FLOOR_TEX, (tex) => {
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        // Ajustar el repeat según el tamaño del laberinto
+        tex.repeat.set(rows / 2, cols / 2);
+    });
+    
+    const floorMat = new THREE.MeshStandardMaterial({ 
+        map: floorTexture,
+        roughness: 0.9,
+        metalness: 0.05
+    });
+    
+    const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(floorWidth, floorHeight),
+        floorMat
+    );
+    
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -0.1;
+    floor.receiveShadow = true;
+    scene.add(floor);
+    
+    console.log(`Piso texturizado creado: ${floorWidth}x${floorHeight}`);
+}
+
+// -------------------------------------------------------------------
+// ---------- INICIALIZACIÓN DEL ESCENARIO ----------
+// -------------------------------------------------------------------
+function createGameScene() {
+    console.log("Creando escenario del juego...");
+    
+    // Limpiar escena si ya existe
+    physicsObjects = [];
+    enemies = [];
+    
+    // Generar laberinto
+    generateMaze(CONFIG.MAZE_ROWS, CONFIG.MAZE_COLS, CONFIG.CELL_SIZE);
+    
+    // Crear piso
+    createFloor();
+    
+    // Colocar enemigos
+    spawnEnemiesInMaze(CONFIG.ENEMY_COUNT);
+    
+    // Crear portal objetivo
+    createGoalAtEnd();
+    
+    // Posicionar al jugador
+    const maze = scene.userData.maze;
+    if (maze) {
+        const startPos = new THREE.Vector3(
+            maze.startX + CONFIG.CELL_SIZE / 2,
+            10,
+            maze.startZ + CONFIG.CELL_SIZE / 2
+        );
+        player.position.copy(startPos);
+        return startPos;
+    }
+    
+    const defaultStart = new THREE.Vector3(0, 10, 0);
+    player.position.copy(defaultStart);
+    return defaultStart;
+}
+
+/** ========= ANIMACIÓN DEL PORTAL ========= */
+function animatePortalParticles(deltaTime) {
+    const portalParticles = scene.userData.portalParticles;
+    if (!portalParticles) return;
+    
+    portalParticles.time += deltaTime;
+    const positions = portalParticles.positions;
+    const portalPos = scene.userData.goal.position;
+    
+    for (let i = 0; i < positions.length / 3; i++) {
+        const idx = i * 3;
+        const radius = 25 + Math.random() * 10;
+        const angle = (portalParticles.time * 0.5 + i * 0.1) % (Math.PI * 2);
+        const height = 20 + Math.sin(portalParticles.time + i) * 10;
+        
+        positions[idx] = portalPos.x + Math.cos(angle) * radius;
+        positions[idx + 1] = height;
+        positions[idx + 2] = portalPos.z + Math.sin(angle) * radius;
+    }
+    
+    portalParticles.mesh.geometry.attributes.position.needsUpdate = true;
+    portalParticles.mesh.rotation.y += deltaTime * 0.2;
+    
+    if (scene.userData.goal) {
+        scene.userData.goal.mesh.rotation.y += deltaTime * 0.5;
+    }
+}
+
+/** ========= LOCOMOCIÓN VR ========= */
+function vrGamepadMove(dt) {
+    if (!renderer.xr.isPresenting) return;
+    
+    const session = renderer.xr.getSession();
+    if (!session) return;
+    
+    for (const src of session.inputSources) {
+        if (!src.gamepad) continue;
+        
+        let [x, y] = [src.gamepad.axes[2], src.gamepad.axes[3]];
+        if (x === undefined || y === undefined) {
+            x = src.gamepad.axes[0] ?? 0;
+            y = src.gamepad.axes[1] ?? 0;
+        }
+        
+        const dead = 0.12;
+        if (Math.abs(x) < dead) x = 0;
+        if (Math.abs(y) < dead) y = 0;
+        if (x === 0 && y === 0) continue;
+
+        const forward = new THREE.Vector3();
+        camera.getWorldDirection(forward);
+        forward.y = 0;
+        forward.normalize();
+        
+        const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+        let next = player.position.clone();
+        next.addScaledVector(forward, -y * CONFIG.VR_WALK_SPEED * dt);
+        next.addScaledVector(right, x * CONFIG.VR_STRAFE_SPEED * dt);
+
         const maze = scene.userData.maze;
         if (maze) {
-            camera.position.set(
-                maze.startX + CONFIG.CELL_SIZE / 2,
-                CONFIG.PLAYER_HEIGHT * 0.8,
-                maze.startZ + CONFIG.CELL_SIZE / 2
-            );
-            controls.getObject().position.copy(camera.position);
+            const halfWidth = (maze.cols * CONFIG.CELL_SIZE) / 2 - 5;
+            const halfHeight = (maze.rows * CONFIG.CELL_SIZE) / 2 - 5;
+            next.x = Math.max(-halfWidth, Math.min(halfWidth, next.x));
+            next.z = Math.max(-halfHeight, Math.min(halfHeight, next.z));
         }
 
-        window.addEventListener('resize', onWindowResize);
-        window.addEventListener('keydown', onKeyDown);
-        window.addEventListener('keyup', onKeyUp);
-        window.addEventListener('keydown', (e) => { 
-            if (e.code === 'KeyF') handleShoot(); 
-        });
+        next.y = -0.1 + 1.6;
+        next = resolveCollisions(player.position, next);
+        player.position.copy(next);
+    }
+}
 
-        document.getElementById('startBtn').addEventListener('click', () => {
-            document.getElementById('portada').style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById('portada').style.display = "none";
-                bgMusic.play().catch(e => console.log("Audio necesita interacción del usuario"));
-            }, 500);
-        });
+/** ========= TELEPORT ========= */
+function updateTeleportArc() {
+    if (!arcLine || !arcLine.visible) return;
+    if (!controllerRight) return;
+    
+    teleportValid = false;
+
+    const origin = new THREE.Vector3().setFromMatrixPosition(controllerRight.matrixWorld);
+    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(controllerRight.quaternion).normalize();
+
+    const pts = [];
+    let hit = null;
+    const v0 = dir.clone().multiplyScalar(CONFIG.ARC_SPEED);
+    const g = new THREE.Vector3(0, -CONFIG.ARC_GRAVITY, 0);
+    let p = origin.clone(), v = v0.clone();
+
+    for (let i = 0; i < CONFIG.ARC_STEPS; i++) {
+        pts.push(p.clone());
+        v.addScaledVector(g, 1 / 60);
+        const np = p.clone().addScaledVector(v, 1 / 60);
+        
+        if (np.y <= -0.1) {
+            hit = { point: new THREE.Vector3(np.x, -0.1, np.z), faceNormal: new THREE.Vector3(0, 1, 0) };
+            break;
+        }
+        p.copy(np);
     }
 
-    function generateMaze(rows, cols, cellSize) {
-        const grid = [];
-        for(let r=0;r<rows;r++){ grid[r] = []; for(let c=0;c<cols;c++){ grid[r][c] = { r, c, visited:false, walls: [true,true,true,true] }; }}
-        const stack = []; let current = grid[0][0]; current.visited = true;
-        function neighbors(cell){ const n = []; const {r,c} = cell; if(r>0 && !grid[r-1][c].visited) n.push(grid[r-1][c]); if(c<cols-1 && !grid[r][c+1].visited) n.push(grid[r][c+1]); if(r<rows-1 && !grid[r+1][c].visited) n.push(grid[r+1][c]); if(c>0 && !grid[r][c-1].visited) n.push(grid[r][c-1]); return n; }
-        while(true){ const n = neighbors(current); if(n.length>0){ const next = n[Math.floor(Math.random()*n.length)]; stack.push(current); const dr = next.r - current.r; const dc = next.c - current.c; if(dr === -1){ current.walls[0] = false; next.walls[2] = false; } if(dc === 1){ current.walls[1] = false; next.walls[3] = false; } if(dr === 1){ current.walls[2] = false; next.walls[0] = false; } if(dc === -1){ current.walls[3] = false; next.walls[1] = false; } current = next; current.visited = true; } else if(stack.length>0){ current = stack.pop(); } else break; }
+    for (let i = 0; i < CONFIG.ARC_STEPS; i++) {
+        const P = pts[Math.min(i, pts.length - 1)];
+        arcPointsBuf[i * 3] = P.x;
+        arcPointsBuf[i * 3 + 1] = P.y;
+        arcPointsBuf[i * 3 + 2] = P.z;
+    }
+    
+    arcGeo.setAttribute('position', new THREE.BufferAttribute(arcPointsBuf, 3));
+    arcGeo.attributes.position.needsUpdate = true;
 
-        const startX = -(cols * cellSize) / 2;
-        const startZ = -(rows * cellSize) / 2;
-        const wallHeightHalf = CONFIG.WALL_HEIGHT / 2;
+    if (hit) {
+        const maze = scene.userData.maze;
+        let inside = true;
+        if (maze) {
+            const halfWidth = (maze.cols * CONFIG.CELL_SIZE) / 2 - 2;
+            const halfHeight = (maze.rows * CONFIG.CELL_SIZE) / 2 - 2;
+            inside = Math.abs(hit.point.x) <= halfWidth && Math.abs(hit.point.z) <= halfHeight;
+        }
+        
+        teleportValid = inside;
+        arcLine.material = teleportValid ? arcMatOK : arcMatBAD;
+        marker.material.color.set(teleportValid ? 0x7ad1ff : 0xff5a5a);
+        marker.position.set(hit.point.x, -0.1 + 0.02, hit.point.z);
+        teleportPoint.copy(hit.point);
+    }
+}
 
-        const wallGeo = new THREE.BoxGeometry(
-            cellSize + CONFIG.WALL_THICKNESS, 
-            CONFIG.WALL_HEIGHT, 
-            CONFIG.WALL_THICKNESS
+/** ========= COLISIONES ========= */
+function resolveCollisions(curr, next) {
+    // Paredes del laberinto
+    for (const obj of physicsObjects) {
+        if (!obj.static) continue;
+        
+        const box = obj.boundingBox.clone();
+        const playerBox = new THREE.Box3(
+            new THREE.Vector3(next.x - CONFIG.PLAYER_RADIUS, next.y - 1.6, next.z - CONFIG.PLAYER_RADIUS),
+            new THREE.Vector3(next.x + CONFIG.PLAYER_RADIUS, next.y, next.z + CONFIG.PLAYER_RADIUS)
         );
-
-        const createWall = (posX, posZ, rotY) => {
-            const wall = new THREE.Mesh(wallGeo, wallMaterial);
-            wall.position.set(posX, wallHeightHalf, posZ);
-            wall.rotation.y = rotY;
-            wall.receiveShadow = true;
-            wall.castShadow = true;
-            scene.add(wall);
-            
-            wall.updateMatrixWorld();
-            const wallBox = new THREE.Box3().setFromObject(wall);
-            physicsObjects.push({ mesh: wall, boundingBox: wallBox, static: true });
         
-            if (wall.material.map) {
-                wall.material.map.repeat.set(1, CONFIG.WALL_HEIGHT / (CONFIG.WALL_THICKNESS * 2));
+        if (box.intersectsBox(playerBox)) {
+            const dx = next.x - obj.mesh.position.x;
+            const dz = next.z - obj.mesh.position.z;
+            const dist = Math.hypot(dx, dz);
+            const minDist = CONFIG.PLAYER_RADIUS + CONFIG.WALL_THICKNESS / 2;
+            
+            if (dist < minDist && dist > 0) {
+                const push = (minDist - dist) + 0.1;
+                const nx = dx / dist;
+                const nz = dz / dist;
+                next.x += nx * push;
+                next.z += nz * push;
             }
-        };
-
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                const cell = grid[r][c];
-                const cx = startX + c * cellSize + cellSize / 2;
-                const cz = startZ + r * cellSize + cellSize / 2;
-
-                if (cell.walls[0]) createWall(cx, cz - cellSize / 2, 0);
-                if (cell.walls[1]) createWall(cx + cellSize / 2, cz, Math.PI / 2);
-                if (cell.walls[2]) createWall(cx, cz + cellSize / 2, 0);
-                if (cell.walls[3]) createWall(cx - cellSize / 2, cz, Math.PI / 2);
-            }
-        }
-        scene.userData.maze = { grid, startX, startZ, rows, cols, cellSize };
-    }
-
-    function spawnEnemiesInMaze(count) {
-        const maze = scene.userData.maze;
-        if (!maze) return;
-        const { startX, startZ, rows, cols, cellSize } = maze;
-
-        const enemyGeo = new THREE.BoxGeometry(15, 15, 15);
-        const enemyMat = new THREE.MeshStandardMaterial({ color: 0xdd4444, roughness: 0.8 });
-
-        let placed = 0;
-        while (placed < count) {
-            const r = 1 + Math.floor(Math.random() * (rows - 2));
-            const c = 1 + Math.floor(Math.random() * (cols - 2));
-            const x = startX + c * cellSize + cellSize / 2;
-            const z = startZ + r * cellSize + cellSize / 2;
-
-            if (Math.hypot(x - (startX + cellSize / 2), z - (startZ + cellSize / 2)) < cellSize) continue;
-
-            const enemy = new THREE.Mesh(enemyGeo, enemyMat); 
-            enemy.position.set(x, 7.5, z);
-            enemy.castShadow = true;
-            enemy.receiveShadow = true;
-            
-            enemy.userData = { 
-                health: CONFIG.ENEMY_HEALTH, 
-                alive: true, 
-                speed: CONFIG.ENEMY_SPEED_MIN + Math.random() * (CONFIG.ENEMY_SPEED_MAX - CONFIG.ENEMY_SPEED_MIN) 
-            };
-            scene.add(enemy);
-            
-            enemy.updateMatrixWorld();
-            const enemyBox = new THREE.Box3().setFromObject(enemy);
-
-            enemies.push(enemy);
-            physicsObjects.push({ mesh: enemy, boundingBox: enemyBox, mass: 50 });
-            placed++;
-        }
-        updateEnemiesHUD();
-    }
-
-    function createGoalAtEnd(){
-        const maze = scene.userData.maze;
-        if(!maze) return;
-        const { startX, startZ, rows, cols, cellSize } = maze;
-        const gx = startX + (cols-1)*cellSize + cellSize/2;
-        const gz = startZ + (rows-1)*cellSize + cellSize/2;
-
-        const portalGeo = new THREE.TorusGeometry(30, 6, 16, 100);
-        const portalMat = new THREE.MeshStandardMaterial({ color:0x22ff88, emissive:0x22ff88, emissiveIntensity:0.3 });
-        const portal = new THREE.Mesh(portalGeo, portalMat);
-        portal.rotation.x = Math.PI/2;
-        portal.position.set(gx, 45, gz);
-        scene.add(portal);
-        scene.userData.goal = { mesh: portal, position: new THREE.Vector3(gx,0,gz) };
-    }
-
-    function handleShoot() {
-        if (!controls.isLocked && !vrActive) return;
-
-        const now = Date.now();
-        if (now - lastShootTime < 300) return;
-        lastShootTime = now;
-
-        shootSound.currentTime = 0;
-        shootSound.play();
-
-        const origin = camera.position;
-        const dir = new THREE.Vector3();
-        camera.getWorldDirection(dir);
-        raycaster.set(origin, dir);
-        raycaster.far = CONFIG.SHOOT_RANGE;
-
-        const shootableObjects = physicsObjects.map(p => p.mesh);
-        const hits = raycaster.intersectObjects(shootableObjects, true);
-
-        let hitEnemy = false;
-        
-        if (hits.length > 0) {
-            const hit = hits[0];
-            
-            let target = hit.object;
-            while (target && !enemies.includes(target)) target = target.parent;
-
-            if (target && target.userData && target.userData.alive) {
-                hitEnemy = true;
-                applyDamageToEnemy(target, CONFIG.SHOOT_DAMAGE);
-                const p = new THREE.Mesh(new THREE.SphereGeometry(4, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffff66 }));
-                p.position.copy(hit.point);
-                scene.add(p);
-                setTimeout(() => scene.remove(p), 120);
-            } else {
-                const p = new THREE.Mesh(new THREE.SphereGeometry(2.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffcc88 }));
-                p.position.copy(hit.point);
-                scene.add(p);
-                setTimeout(() => scene.remove(p), 120);
-            }
-        }
-        
-        if (!hitEnemy && hits.length === 0) {
-            const missPoint = origin.clone().add(dir.multiplyScalar(CONFIG.SHOOT_RANGE));
-            const p = new THREE.Mesh(new THREE.SphereGeometry(2.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0x666666 }));
-            p.position.copy(missPoint);
-            scene.add(p);
-            setTimeout(() => scene.remove(p), 120);
-        }
-    }
-
-    function applyDamageToEnemy(enemy, amount) {
-        if (!enemy.userData) return;
-        enemy.userData.health -= amount;
-
-        enemy.material.emissive = new THREE.Color(0xff0000);
-        setTimeout(() => { if(enemy.material) enemy.material.emissive = new THREE.Color(0x000000); }, 120);
-
-        if (enemy.userData.health <= 0 && enemy.userData.alive) {
-            enemy.userData.alive = false;
-            enemy.rotation.z = Math.PI / 2;
-            enemy.material.color.set(0x333333);
-            
-            const idx = physicsObjects.findIndex(p => p.mesh === enemy);
-            if (idx >= 0) physicsObjects.splice(idx, 1);
-            
-            setTimeout(() => { scene.remove(enemy); updateEnemiesHUD(); }, 1200);
-        }
-        updateEnemiesHUD();
-    }
-
-    function onKeyDown(e) { 
-        keys[e.code] = true;
-        
-        switch (e.code) {
-            case 'Digit1': playAction('Jab Cross'); break;
-            case 'Digit2': playAction('Running'); break;
-            case 'Digit3': playAction('Running Up Stairs'); break;
-            case 'Digit4': playAction('Jump'); break;
-            case 'Digit5': playAction('Walking'); break;
         }
     }
     
-    function onKeyUp(e) { 
-        keys[e.code] = false; 
+    // Enemigos
+    for (const enemy of enemies) {
+        if (!enemy.userData.alive) continue;
+        
+        const dx = next.x - enemy.position.x;
+        const dz = next.z - enemy.position.z;
+        const dist = Math.hypot(dx, dz);
+        const minDist = CONFIG.PLAYER_RADIUS + 7.5;
+        
+        if (dist < minDist) {
+            const push = (minDist - dist) + 0.1;
+            const nx = dx / (dist || 1);
+            const nz = dz / (dist || 1);
+            next.x += nx * push;
+            next.z += nz * push;
+            
+            // Daño al jugador
+            takeDamage(CONFIG.ENEMY_ATTACK_DAMAGE);
+        }
     }
+    
+    return next;
+}
 
-    function updateEnemiesHUD() {
-        const alive = enemies.filter(e => e.userData && e.userData.alive).length;
-        enemiesCountEl.textContent = alive;
+/** ========= DAÑO AL JUGADOR ========= */
+function takeDamage(amount) {
+    const lifeElement = document.getElementById('life');
+    if (!lifeElement) return;
+    
+    let currentLife = parseInt(lifeElement.textContent);
+    currentLife = Math.max(0, currentLife - amount);
+    lifeElement.textContent = currentLife;
+    
+    // Actualizar letrero VR si está visible
+    const vrLife = document.getElementById('vr-life');
+    if (vrLife) {
+        vrLife.textContent = currentLife;
     }
+    
+    if (currentLife <= 0) {
+        gameOver();
+    }
+}
 
-    function showMessage(text, ms = 3000) {
+/** ========= GAME OVER ========= */
+function gameOver() {
+    showMessage("GAME OVER\nLos aliens te atraparon", false);
+    
+    // Detener el juego
+    renderer.setAnimationLoop(null);
+    
+    // Mostrar botón de reinicio
+    const restartBtn = document.getElementById('restartBtn');
+    if (restartBtn) {
+        restartBtn.style.display = 'block';
+        restartBtn.onclick = restartGame;
+    }
+}
+
+/** ========= REINICIAR JUEGO ========= */
+function restartGame() {
+    // Ocultar mensaje y botón
+    const messageEl = document.getElementById('message');
+    const restartBtn = document.getElementById('restartBtn');
+    if (messageEl) messageEl.style.display = 'none';
+    if (restartBtn) restartBtn.style.display = 'none';
+    
+    // Restaurar vida
+    const lifeElement = document.getElementById('life');
+    if (lifeElement) lifeElement.textContent = '100';
+    
+    // Actualizar letrero VR si está visible
+    const vrLife = document.getElementById('vr-life');
+    if (vrLife) {
+        vrLife.textContent = '100';
+    }
+    
+    // Limpiar escena
+    while (scene.children.length > 0) {
+        const child = scene.children[0];
+        if (child !== player && child !== controllerLeft && child !== controllerRight && 
+            child !== grip0 && child !== grip1 && child !== arcLine && child !== marker) {
+            scene.remove(child);
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(m => m.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
+        }
+    }
+    
+    // Reinicializar variables
+    physicsObjects = [];
+    enemies = [];
+    
+    // Crear nuevo escenario
+    createGameScene();
+    
+    // Reiniciar loop
+    renderer.setAnimationLoop(gameLoop);
+}
+
+/** ========= VICTORIA ========= */
+function checkVictory() {
+    if (!scene.userData.goal) return;
+    
+    const distanceToGoal = player.position.distanceTo(scene.userData.goal.position);
+    if (distanceToGoal < scene.userData.goal.radius) {
+        showMessage("¡VICTORIA!\nPortal alcanzado", true);
+        
+        // Detener el juego
+        renderer.setAnimationLoop(null);
+        
+        // Mostrar botón de reinicio
+        const restartBtn = document.getElementById('restartBtn');
+        if (restartBtn) {
+            restartBtn.style.display = 'block';
+            restartBtn.onclick = restartGame;
+        }
+        
+        // Efectos de victoria
+        createVictoryEffects();
+    }
+}
+
+/** ========= EFECTOS DE VICTORIA ========= */
+function createVictoryEffects() {
+    // Crear confeti
+    const confettiCount = 100; // Reducido para mejor rendimiento
+    const confettiGeo = new THREE.BufferGeometry();
+    const positions = new Float32Array(confettiCount * 3);
+    const colors = new Float32Array(confettiCount * 3);
+    
+    for (let i = 0; i < confettiCount; i++) {
+        const i3 = i * 3;
+        positions[i3] = player.position.x + (Math.random() - 0.5) * 50;
+        positions[i3 + 1] = player.position.y + Math.random() * 100;
+        positions[i3 + 2] = player.position.z + (Math.random() - 0.5) * 50;
+        
+        colors[i3] = Math.random();
+        colors[i3 + 1] = Math.random();
+        colors[i3 + 2] = Math.random();
+    }
+    
+    confettiGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    confettiGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    const confettiMat = new THREE.PointsMaterial({
+        size: 3,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8
+    });
+    
+    const confetti = new THREE.Points(confettiGeo, confettiMat);
+    scene.add(confetti);
+    
+    // Animar confeti
+    function animateConfetti() {
+        const positions = confettiGeo.attributes.position.array;
+        for (let i = 0; i < confettiCount; i++) {
+            const i3 = i * 3;
+            positions[i3 + 1] -= 1;
+            if (positions[i3 + 1] < player.position.y - 20) {
+                positions[i3 + 1] = player.position.y + Math.random() * 100;
+            }
+        }
+        confettiGeo.attributes.position.needsUpdate = true;
+        requestAnimationFrame(animateConfetti);
+    }
+    animateConfetti();
+}
+
+/** ========= ACTUALIZAR HUD Y LETRERO VR ========= */
+function updateHUD() {
+    const enemiesCount = document.getElementById('enemiesCount');
+    if (enemiesCount) {
+        enemiesCount.textContent = enemies.filter(e => e.userData.alive).length;
+    }
+    
+    // También actualizar el letrero VR si está visible
+    const vrSign = document.getElementById('vr-enter-sign');
+    if (vrSign && vrSign.style.display === 'block') {
+        const vrLife = document.getElementById('vr-life');
+        const vrEnemies = document.getElementById('vr-enemies');
+        const lifeElement = document.getElementById('life');
+        
+        if (vrLife && vrEnemies && lifeElement) {
+            vrLife.textContent = lifeElement.textContent;
+            vrEnemies.textContent = enemies.filter(e => e.userData.alive).length;
+        }
+    }
+}
+
+/** ========= MOSTRAR MENSAJES ========= */
+function showMessage(text, isVictory = false) {
+    const messageEl = document.getElementById('message');
+    if (messageEl) {
+        messageEl.textContent = text;
         messageEl.style.display = 'block';
-        messageEl.innerHTML = text;
-        if (ms > 0) setTimeout(() => { messageEl.style.display = 'none'; }, ms);
-    }
-
-    function stepPhysics(dt) {
-        const playerPos = camera.position;
-
-        for (const en of enemies) {
-            if (!en.userData || !en.userData.alive) continue;
-
-            const enemyPhysObj = physicsObjects.find(p => p.mesh === en);
-            const toPlayer = new THREE.Vector3().subVectors(playerPos, en.position);
-            const dist = toPlayer.length();
-
-            if (dist < CONFIG.ENEMY_SIGHT_RANGE) {
-                toPlayer.normalize();
-                
-                raycaster.set(en.position, toPlayer);
-                raycaster.far = dist;
-                const hits = raycaster.intersectObjects(physicsObjects.filter(p => p.static).map(p => p.mesh));
-
-                if (hits.length === 0 || hits[0].distance >= dist - 1) {
-                    
-                    toPlayer.y = 0;
-                    en.position.addScaledVector(toPlayer, en.userData.speed * dt * 60);
-                    
-                    if(enemyPhysObj) enemyPhysObj.boundingBox.setFromObject(en);
-
-                    const newDist = playerPos.distanceTo(en.position);
-                    
-                    if (newDist < CONFIG.ENEMY_ATTACK_RANGE) {
-                        if (!en.userData._lastAttack || (performance.now() - en.userData._lastAttack) > CONFIG.ENEMY_ATTACK_COOLDOWN) {
-                            en.userData._lastAttack = performance.now();
-                            playerLife -= CONFIG.ENEMY_ATTACK_DAMAGE;
-                            if (playerLife < 0) playerLife = 0;
-                            lifeEl.textContent = playerLife;
-                            if (playerLife <= 0) onPlayerDead();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    function onPlayerDead() {
-        showMessage('- GAME OVER -\n<span style="font-size: 18px">Reinicia la página para volver a jugar</span>', 10000);
-        controls.unlock();
-    }
-
-    function playAction(name) {
-        if (actionCurrent && actionCurrent.name === name) return;
-
-        const newAction = actions[name];
-        if (!newAction) {
-            console.warn(`No se encontró la animación: ${name}`);
-            return;
-        }
-
-        newAction.reset();
-        newAction.setLoop(THREE.LoopRepeat, Infinity);
-        newAction.play();
-
-        if (actionCurrent) {
-            actionCurrent.crossFadeTo(newAction, 0.3, true);
-        }
-
-        actionCurrent = newAction;
-        actionCurrent.name = name;
-    }
-
-    function updatePlayerMovement(dt) {
-        if (!controls.isLocked && !vrActive) return;
-
-        const speed = (keys['ShiftLeft'] || keys['ShiftRight']) ? CONFIG.PLAYER_SPRINT_SPEED : CONFIG.PLAYER_SPEED;
-
-        const moveForward = new THREE.Vector3();
-        const moveRight = new THREE.Vector3();
-        controls.getDirection(moveForward);
-        moveRight.crossVectors(upVector, moveForward).normalize();
-        moveForward.y = 0;
-        moveForward.normalize();
+        messageEl.style.color = isVictory ? '#22ff88' : '#ff4444';
+        messageEl.style.borderColor = isVictory ? '#22ff88' : '#ff4444';
         
-        playerVelocity.x *= CONFIG.PLAYER_DAMPING;
-        playerVelocity.z *= CONFIG.PLAYER_DAMPING;
-
-        playerVelocity.y += CONFIG.GRAVITY * dt;
-
-        if (keys['KeyW']) playerVelocity.addScaledVector(moveForward, speed * dt);
-        if (keys['KeyS']) playerVelocity.addScaledVector(moveForward, -speed * dt);
-        if (keys['KeyA']) playerVelocity.addScaledVector(moveRight, speed * dt);
-        if (keys['KeyD']) playerVelocity.addScaledVector(moveRight, -speed * dt);
-
-        if (keys['Space'] && playerOnGround) {
-            playerVelocity.y = CONFIG.PLAYER_JUMP_FORCE;
-            playerOnGround = false;
-        }
-
-        const delta = playerVelocity.clone().multiplyScalar(dt);
-        const playerHalfHeight = CONFIG.PLAYER_HEIGHT / 2;
-        
-        playerCollider.setFromCenterAndSize(
-            camera.position,
-            new THREE.Vector3(CONFIG.PLAYER_WIDTH, CONFIG.PLAYER_HEIGHT, CONFIG.PLAYER_WIDTH)
-        );
-
-        const futureYCollider = playerCollider.clone().translate(new THREE.Vector3(0, delta.y, 0));
-        playerOnGround = false;
-        for (const obj of physicsObjects) {
-            if (futureYCollider.intersectsBox(obj.boundingBox)) {
-                if (playerVelocity.y < 0) {
-                    playerOnGround = true;
-                    camera.position.y = obj.boundingBox.max.y + playerHalfHeight;
-                }
-                playerVelocity.y = 0;
-                delta.y = 0;
-                break;
-            }
-        }
-        
-        const futureXCollider = playerCollider.clone().translate(new THREE.Vector3(delta.x, 0, 0));
-        for (const obj of physicsObjects) {
-            if (futureXCollider.intersectsBox(obj.boundingBox)) {
-                playerVelocity.x = 0;
-                delta.x = 0;
-                break;
-            }
-        }
-        
-        const futureZCollider = playerCollider.clone().translate(new THREE.Vector3(0, 0, delta.z));
-        for (const obj of physicsObjects) {
-            if (futureZCollider.intersectsBox(obj.boundingBox)) {
-                playerVelocity.z = 0;
-                delta.z = 0;
-                break;
-            }
-        }
-
-        camera.position.add(delta);
-
-        if (camera.position.y < playerHalfHeight) {
-            playerVelocity.y = 0;
-            camera.position.y = playerHalfHeight;
-            playerOnGround = true;
-        }
-
-        const goal = scene.userData.goal;
-        if (goal && playerLife > 0) {
-            const distGoal = camera.position.distanceTo(goal.position);
-            if (distGoal < 50) {
-                showMessage('¡GANASTE!\n<span style="font-size: 18px">Llegaste al portal</span>', 7000);
-                controls.unlock();
-                playerLife = -1;
-            }
+        if (isVictory) {
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
         }
     }
+}
 
-    function animate() {
-        requestAnimationFrame(animate);
+/** ========= LOOP DEL JUEGO ========= */
+function gameLoop() {
+    try {
+        const dt = Math.min(clock.getDelta(), 0.05);
+
+        if (renderer.xr.isPresenting) {
+            vrGamepadMove(dt);
+            updateTeleportArc();
+        }
+
+        // Mantener fondo centrado
+        const p = player.position;
+        if (skyMesh) skyMesh.position.copy(p);
+        if (starField) starField.position.copy(p);
+
+        // Animar partículas del portal
+        animatePortalParticles(dt);
+
+        // Actualizar UI
+        updateHUD();
+
+        // Verificar victoria
+        checkVictory();
+
+        // Renderizar
+        renderer.clear();
+        if (bgCam && camera) {
+            bgCam.projectionMatrix.copy(camera.projectionMatrix);
+            bgCam.matrixWorld.copy(camera.matrixWorld);
+            bgCam.matrixWorldInverse.copy(camera.matrixWorldInverse);
+            renderer.render(bgScene, bgCam);
+        }
+        renderer.render(scene, camera);
+    } catch (error) {
+        console.error("Error en gameLoop:", error);
+    }
+}
+
+/** ========= INICIALIZAR JUEGO ========= */
+function initGame() {
+    if (gameInitialized) {
+        console.log("Juego ya inicializado");
+        return;
+    }
     
-        const dt = clock.getDelta();
+    console.log("Iniciando juego...");
+    
+    try {
+        // Ocultar portada
+        const portada = document.getElementById('portada');
+        portada.style.display = 'none';
         
-        vrActive = renderer.xr.isPresenting;
+        // Mostrar elementos del juego
+        const canvas = document.getElementById('scene');
+        canvas.style.display = 'block';
         
-        if (playerLife > 0) {
-            if (mixer) {
-                mixer.update(dt);
-            }
-            
-            if (vrActive) {
-                vrGamepadMove(dt);
-                updateTeleportArc();
-            } else {
-                updatePlayerMovement(dt);
-            }
-            stepPhysics(dt);
-        }
+        const hud = document.getElementById('hud');
+        if (hud) hud.style.display = 'block';
         
-        if (playerModel && !vrActive) {
-            playerModel.position.copy(camera.position);
-            playerModel.quaternion.copy(camera.quaternion);
-            playerModel.position.y -= CONFIG.PLAYER_HEIGHT / 2 - 2; 
-        }
+        const crosshair = document.querySelector('.crosshair');
+        if (crosshair) crosshair.style.display = 'block';
         
-        if (vrActive) {
-            renderer.render(scene, camera);
-            
-            if (playerModel) {
-                playerModel.visible = false;
-            }
-        } else {
-            renderer.autoClear = false;
-            renderer.clear();
-
-            let bobOffset = 0;
-            if (playerRootBone && playerModel && playerLife > 0) {
-                const currentRootY = playerRootBone.position.y;
-                bobOffset = (currentRootY - defaultRootY) * playerModel.scale.y; 
-            }
-            
-            if (playerModel) playerModel.visible = false;
-            
-            renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
-            renderer.setScissor(0, 0, window.innerWidth, window.innerHeight);
-            renderer.setScissorTest(true);
-            
-            camera.position.y += bobOffset; 
-            renderer.render(scene, camera);
-            camera.position.y -= bobOffset;
-
-            if (playerModel && thirdPersonCamera) {
-                playerModel.visible = true;
-
-                const offset = new THREE.Vector3(0, 40, 60);
-                offset.applyQuaternion(playerModel.quaternion);
-                thirdPersonCamera.position.copy(playerModel.position).add(offset);
-                thirdPersonCamera.lookAt(playerModel.position.clone().add(new THREE.Vector3(0, 20, 0)));
-
-                const w = window.innerWidth * 0.20;
-                const h = window.innerHeight * 0.20;
-                const x = window.innerWidth - w - 20;
-                const y = 20;
-                
-                renderer.clearDepth();
-                
-                renderer.setViewport(x, y, w, h);
-                renderer.setScissor(x, y, w, h);
-                renderer.setScissorTest(true);
-
-                renderer.render(scene, thirdPersonCamera);
-            }
-            
-            renderer.autoClear = true;
-        }
+        const footer = document.querySelector('footer');
+        if (footer) footer.style.display = 'flex';
         
-        stats.update();
+        const vrInfo = document.getElementById('vr-info');
+        if (vrInfo) vrInfo.style.display = 'block';
+        
+        // Inicializar Three.js
+        initRenderer();
+        initScenes();
+        initLights();
+        initSky();
+        initAudio();
+        initVR();
+        
+        // Crear escenario del juego
+        createGameScene();
+        
+        // Iniciar loop del juego
+        renderer.setAnimationLoop(gameLoop);
+        
+        gameInitialized = true;
+        
+        // Actualizar HUD inicial
+        updateHUD();
+        
+        console.log("Juego inicializado correctamente");
+        
+        // Activar audio después de interacción del usuario
+        document.addEventListener('click', function activateAudio() {
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            if (backgroundMusic) {
+                backgroundMusic.play().catch(e => console.log('Audio activado'));
+            }
+            document.removeEventListener('click', activateAudio);
+        });
+        
+    } catch (error) {
+        console.error("Error al inicializar el juego:", error);
+        alert("Error al iniciar el juego: " + error.message);
     }
+}
 
-    function onWindowResize() {
+/** ========= RESIZE ========= */
+window.addEventListener('resize', () => {
+    if (!gameInitialized) return;
+    
+    if (camera) {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
+    }
     
-        if (thirdPersonCamera) {
-            const w = window.innerWidth * 0.20;
-            const h = window.innerHeight * 0.20;
-            thirdPersonCamera.aspect = w / h;
-            thirdPersonCamera.updateProjectionMatrix();
-        }
-
+    if (bgCam) {
+        bgCam.aspect = window.innerWidth / window.innerHeight;
+        bgCam.updateProjectionMatrix();
+    }
+    
+    if (renderer) {
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
-</script>
+});
+
+/** ========= EVENTOS ========= */
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Documento cargado");
+    
+    // Botón de inicio
+    const startBtn = document.getElementById('startBtn');
+    if (startBtn) {
+        startBtn.addEventListener('click', initGame);
+    }
+    
+    // También permitir iniciar con Enter
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !gameInitialized) {
+            initGame();
+        }
+    });
+    
+    // Botón de reinicio (oculto inicialmente)
+    const restartBtn = document.getElementById('restartBtn');
+    if (restartBtn) {
+        restartBtn.onclick = restartGame;
+    }
+    
+    console.log("Listo para iniciar... Presiona el botón 'Iniciar Experiencia VR'");
+});
+    </script>
 </body>
 </html>
